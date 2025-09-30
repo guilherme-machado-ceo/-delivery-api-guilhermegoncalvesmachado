@@ -1,20 +1,38 @@
-# Delivery API
 
-This is a delivery API project developed by Guilherme Gonçalves Machado.
+# Delivery Tech API
 
-## Description
+Sistema de delivery desenvolvido com Spring Boot e Java 21.
 
-This API manages delivery operations, providing endpoints for managing orders, deliveries, and related functionalities.
-
-## Setup
-
-1. Clone the repository
-2. Install dependencies
-3. Configure environment variables
-4. Run the application
-
-## Technologies
-
-- Java
-- Spring Boot
+## 🚀 Tecnologias
+- **Java 21 LTS** (versão mais recente)
+- Spring Boot 3.2.x
+- Spring Web
+- Spring Data JPA
+- H2 Database
 - Maven
+
+## ⚡ Recursos Modernos Utilizados
+- Records (Java 14+)
+- Text Blocks (Java 15+)
+- Pattern Matching (Java 17+)
+- Virtual Threads (Java 21)
+
+## 🏃‍♂️ Como executar
+1. **Pré-requisitos:** JDK 21 instalado
+2. Clone o repositório
+3. Execute: `./mvnw spring-boot:run`
+4. Acesse: http://localhost:8080/health
+
+## 📋 Endpoints
+- GET /health - Status da aplicação (inclui versão Java)
+- GET /info - Informações da aplicação
+- GET /h2-console - Console do banco H2
+
+## 🔧 Configuração
+- Porta: 8080
+- Banco: H2 em memória
+- Profile: development
+
+## 👨‍💻 Desenvolvedor
+Guilherme Gonçalves Machado - Arquitetura de Sistemas turma TI 03362
+Desenvolvido com JDK 21 e Spring Boot 3.2.x

@@ -25,7 +25,7 @@ public class OpenApiConfig {
                         .description("API REST para sistema de delivery desenvolvida com Spring Boot e Java 21")
                         .contact(new Contact()
                                 .name("Guilherme Gonçalves Machado")
-                                .email("guilherme.ceo@hubtsyr.com")
+                                .email("guilherme.ceo@hubstry.com")
                                 .url("https://www.linkedin.com/in/guilhermegoncalvesmachado/"))
                         .license(new License()
                                 .name("MIT License")

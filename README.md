@@ -287,8 +287,8 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 **Guilherme Gonçalves Machado**
 - 🎓 Arquitetura de Sistemas - Turma TI 03362
 - 💼 Desenvolvido com Java 21 e Spring Boot 3.2.x
-- 📧 Email: [seu-email@exemplo.com]
-- 🔗 LinkedIn: [seu-linkedin]
+- 📧 Email: guilherme.ceo@hubtsyr.com
+- 🔗 LinkedIn: https://www.linkedin.com/in/guilhermegoncalvesmachado/
 
 ---
 

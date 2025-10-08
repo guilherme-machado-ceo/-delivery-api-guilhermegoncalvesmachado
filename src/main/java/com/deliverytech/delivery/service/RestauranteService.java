@@ -27,11 +27,11 @@ public class RestauranteService {
     }
     
     public List<Restaurante> buscarPorCategoria(String categoria) {
-        return restauranteRepository.findByCategoriaIgnoreCase(categoria);
+        return restauranteRepository.findByCategoria(categoria);
     }
     
     public List<Restaurante> buscarPorNome(String nome) {
-        return restauranteRepository.findByNomeContainingIgnoreCase(nome);
+        return restauranteRepository.findTop5ByOrderByNomeAsc();
     }
     
     public Restaurante atualizar(Long id, Restaurante restaurante) {
@@ -53,6 +53,6 @@ public class RestauranteService {
     }
     
     public List<Restaurante> listarPorAvaliacao() {
-        return restauranteRepository.findAllByOrderByAvaliacaoDesc();
+        return restauranteRepository.findByAtivoTrue();
     }
 }

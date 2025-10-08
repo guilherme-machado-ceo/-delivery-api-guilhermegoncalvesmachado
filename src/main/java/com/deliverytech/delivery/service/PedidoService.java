@@ -2,6 +2,7 @@ package com.deliverytech.delivery.service;
 
 import com.deliverytech.delivery.model.Pedido;
 import com.deliverytech.delivery.model.Cliente;
+import com.deliverytech.delivery.model.StatusPedido;
 import com.deliverytech.delivery.repository.PedidoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,7 @@ public class PedidoService {
         pedido.setCliente(cliente);
         
         // Define status inicial
-        pedido.setStatus("PENDENTE");
+        pedido.setStatus(StatusPedido.PENDENTE);
         pedido.setDataPedido(LocalDateTime.now());
         
         return pedidoRepository.save(pedido);
@@ -45,9 +46,9 @@ public class PedidoService {
         return pedidoRepository.findByCliente(cliente);
     }
     
-    public Pedido atualizarStatus(Long id, String novoStatus) {
+    public Pedido atualizarStatus(Long id, StatusPedido novoStatus) {
         Pedido pedido = buscarPorId(id);
-        pedido.setStatus(novoStatus.toUpperCase());
+        pedido.setStatus(novoStatus);
         return pedidoRepository.save(pedido);
     }
     
@@ -57,6 +58,6 @@ public class PedidoService {
     
     public List<Pedido> buscarPedidosClienteOrdenadosPorData(Long clienteId) {
         Cliente cliente = clienteService.buscarPorId(clienteId);
-        return pedidoRepository.findClienteOrderByDataDesc(cliente);
+        return pedidoRepository.findByClienteOrderByDataPedidoDesc(cliente);
     }
 }

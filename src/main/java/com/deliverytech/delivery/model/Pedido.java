@@ -17,7 +17,8 @@ public class Pedido {
     private Restaurante restaurante;
     
     private LocalDateTime dataPedido = LocalDateTime.now();
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private StatusPedido status;
     private BigDecimal valorTotal;
     private String enderecoCoberto;
     private String observacoes;
@@ -55,11 +56,11 @@ public class Pedido {
         this.dataPedido = dataPedido;
     }
 
-    public String getStatus() {
+    public StatusPedido getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(StatusPedido status) {
         this.status = status;
     }
 

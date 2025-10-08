@@ -1,6 +1,7 @@
 package com.deliverytech.delivery.controller;
 
 import com.deliverytech.delivery.model.Pedido;
+import com.deliverytech.delivery.model.StatusPedido;
 import com.deliverytech.delivery.service.PedidoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -32,7 +33,7 @@ public class PedidoController {
     }
     
     @PatchMapping("/{id}/status")
-    public ResponseEntity<Pedido> atualizarStatus(@PathVariable Long id, @RequestParam String status) {
+    public ResponseEntity<Pedido> atualizarStatus(@PathVariable Long id, @RequestParam StatusPedido status) {
         return ResponseEntity.ok(pedidoService.atualizarStatus(id, status));
     }
     

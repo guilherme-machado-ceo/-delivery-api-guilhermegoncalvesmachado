@@ -31,3 +31,39 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### macOS ###
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+### Windows ###
+*.tmp
+*.temp
+*.log
+*.swp
+*.swo
+
+### Application specific ###
+application-local.properties
+application-prod.properties
+*.pid
+
+### Database ###
+*.db
+*.sqlite
+*.sqlite3
+
+### Logs ###
+logs/
+*.log
+log/
+
+### Backup files ###
+*.bak
+*.backup
+*~

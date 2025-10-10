@@ -93,6 +93,13 @@
 			<version>0.12.3</version>
 			<scope>runtime</scope>
 		</dependency>
+		
+		<!-- ModelMapper for DTO mapping -->
+		<dependency>
+			<groupId>org.modelmapper</groupId>
+			<artifactId>modelmapper</artifactId>
+			<version>3.1.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>

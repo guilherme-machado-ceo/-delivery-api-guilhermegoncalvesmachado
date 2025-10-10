@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { 
   Users, 
@@ -187,10 +188,13 @@ const Dashboard: React.FC = () => {
           <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Ações Rápidas</h2>
             <div className="grid grid-cols-2 gap-4">
-              <button className="flex items-center justify-center p-4 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors">
+              <Link 
+                to="/clientes" 
+                className="flex items-center justify-center p-4 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
+              >
                 <Users className="h-5 w-5 mr-2" />
-                Novo Cliente
-              </button>
+                Gerenciar Clientes
+              </Link>
               <button className="flex items-center justify-center p-4 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors">
                 <Store className="h-5 w-5 mr-2" />
                 Novo Restaurante

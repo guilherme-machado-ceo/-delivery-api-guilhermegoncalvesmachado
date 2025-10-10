@@ -9,6 +9,7 @@ import Features from './components/Features';
 import ApiDemo from './components/ApiDemo';
 import TechStack from './components/TechStack';
 import Dashboard from './pages/Dashboard';
+import Clientes from './pages/Clientes';
 import ProtectedRoute from './components/ProtectedRoute';
 import './index.css';
 
@@ -74,12 +75,7 @@ function App() {
                 path="/clientes" 
                 element={
                   <ProtectedRoute requiredRoles={['USER', 'ADMIN', 'MANAGER']}>
-                    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                      <div className="text-center">
-                        <h1 className="text-2xl font-bold text-gray-900 mb-4">Gestão de Clientes</h1>
-                        <p className="text-gray-600">Em desenvolvimento...</p>
-                      </div>
-                    </div>
+                    <Clientes />
                   </ProtectedRoute>
                 } 
               />

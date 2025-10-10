@@ -16,6 +16,8 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
     List<Produto> findByPrecoLessThanEqual(BigDecimal preco);
     List<Produto> findByRestaurante(Restaurante restaurante);
     List<Produto> findByRestauranteAndCategoria(Restaurante restaurante, String categoria);
+    List<Produto> findByRestauranteAndDisponivelTrue(Restaurante restaurante);
+    List<Produto> findByCategoriaAndDisponivelTrue(String categoria);
     
     @Query(value = "SELECT p.*, COUNT(ip.id) as vendas FROM produto p " +
            "LEFT JOIN item_pedido ip ON ip.produto_id = p.id " +

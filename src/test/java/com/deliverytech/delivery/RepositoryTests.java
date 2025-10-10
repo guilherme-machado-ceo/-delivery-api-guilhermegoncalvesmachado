@@ -114,7 +114,10 @@ public class RepositoryTests {
         pedido.setStatus(StatusPedido.PENDENTE);
         pedido.setDataPedido(LocalDateTime.now());
         pedido.setValorTotal(new BigDecimal("50.00"));
-        pedido.setEnderecoCoberto("Rua do Cliente, 321 - São Paulo/SP");
+        pedido.setEnderecoEntrega("Rua do Cliente, 321 - São Paulo/SP");
+        pedido.setCepEntrega("01234-567");
+        pedido.setTaxaEntrega(new BigDecimal("5.00"));
+        pedido.setTotal(new BigDecimal("55.00"));
         pedido.setObservacoes("Pedido de teste");
         pedidoRepository.save(pedido);
 
@@ -150,7 +153,10 @@ public class RepositoryTests {
         pedido.setStatus(StatusPedido.CONFIRMADO);
         pedido.setDataPedido(LocalDateTime.now());
         pedido.setValorTotal(new BigDecimal("50.00"));
-        pedido.setEnderecoCoberto("Rua do Status, 987 - São Paulo/SP");
+        pedido.setEnderecoEntrega("Rua do Status, 987 - São Paulo/SP");
+        pedido.setCepEntrega("01234-890");
+        pedido.setTaxaEntrega(new BigDecimal("6.00"));
+        pedido.setTotal(new BigDecimal("56.00"));
         pedido.setObservacoes("Teste de status");
         pedidoRepository.save(pedido);
 

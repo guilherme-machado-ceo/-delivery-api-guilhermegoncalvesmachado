@@ -51,7 +51,7 @@ public class ClienteService implements ClienteServiceInterface {
     @Transactional(readOnly = true)
     public ClienteResponseDTO buscarClientePorEmail(String email) {
         Cliente cliente = clienteRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("Cliente", "email", email));
+                .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado com email: " + email));
         
         return modelMapper.map(cliente, ClienteResponseDTO.class);
     }

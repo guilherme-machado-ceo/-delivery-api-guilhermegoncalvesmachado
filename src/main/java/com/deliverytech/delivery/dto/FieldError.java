@@ -13,6 +13,9 @@ public class FieldError {
     
     @Schema(description = "Mensagem de erro", example = "Email deve ter um formato válido")
     private String message;
+    
+    @Schema(description = "Código do erro", example = "Email.invalid")
+    private String code;
 
     public FieldError() {}
 
@@ -20,6 +23,13 @@ public class FieldError {
         this.field = field;
         this.rejectedValue = rejectedValue;
         this.message = message;
+    }
+
+    public FieldError(String field, Object rejectedValue, String message, String code) {
+        this.field = field;
+        this.rejectedValue = rejectedValue;
+        this.message = message;
+        this.code = code;
     }
 
     // Getters and Setters
@@ -45,5 +55,13 @@ public class FieldError {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

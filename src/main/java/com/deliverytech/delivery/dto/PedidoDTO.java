@@ -21,6 +21,11 @@ public class PedidoDTO {
     @Schema(description = "Endereço para entrega", example = "Rua das Flores, 123 - São Paulo/SP", required = true)
     private String enderecoEntrega;
 
+    @NotBlank(message = "CEP de entrega é obrigatório")
+    @Pattern(regexp = "\\d{5}-?\\d{3}", message = "CEP deve estar no formato 00000-000")
+    @Schema(description = "CEP para entrega", example = "01234-567", required = true)
+    private String cepEntrega;
+
     @Size(max = 500, message = "Observações devem ter no máximo 500 caracteres")
     @Schema(description = "Observações do pedido", example = "Entrega rápida")
     private String observacoes;
@@ -33,10 +38,11 @@ public class PedidoDTO {
     // Constructors
     public PedidoDTO() {}
 
-    public PedidoDTO(Long clienteId, Long restauranteId, String enderecoEntrega, String observacoes, List<ItemPedidoDTO> itens) {
+    public PedidoDTO(Long clienteId, Long restauranteId, String enderecoEntrega, String cepEntrega, String observacoes, List<ItemPedidoDTO> itens) {
         this.clienteId = clienteId;
         this.restauranteId = restauranteId;
         this.enderecoEntrega = enderecoEntrega;
+        this.cepEntrega = cepEntrega;
         this.observacoes = observacoes;
         this.itens = itens;
     }
@@ -64,6 +70,14 @@ public class PedidoDTO {
 
     public void setEnderecoEntrega(String enderecoEntrega) {
         this.enderecoEntrega = enderecoEntrega;
+    }
+
+    public String getCepEntrega() {
+        return cepEntrega;
+    }
+
+    public void setCepEntrega(String cepEntrega) {
+        this.cepEntrega = cepEntrega;
     }
 
     public String getObservacoes() {

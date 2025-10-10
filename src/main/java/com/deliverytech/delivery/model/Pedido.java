@@ -40,7 +40,19 @@ public class Pedido {
     @NotBlank(message = "Endereço de entrega é obrigatório")
     @Size(max = 255, message = "Endereço deve ter no máximo 255 caracteres")
     @Schema(description = "Endereço para entrega", example = "Rua das Flores, 123 - São Paulo/SP", required = true)
-    private String enderecoCoberto;
+    private String enderecoEntrega;
+    
+    @NotBlank(message = "CEP de entrega é obrigatório")
+    @Schema(description = "CEP para entrega", example = "01234-567", required = true)
+    private String cepEntrega;
+    
+    @DecimalMin(value = "0.00", message = "Taxa de entrega não pode ser negativa")
+    @Schema(description = "Taxa de entrega", example = "5.90")
+    private BigDecimal taxaEntrega;
+    
+    @DecimalMin(value = "0.01", message = "Total deve ser maior que zero")
+    @Schema(description = "Total do pedido (itens + taxa)", example = "35.90")
+    private BigDecimal total;
     
     @Size(max = 500, message = "Observações devem ter no máximo 500 caracteres")
     @Schema(description = "Observações adicionais do pedido", example = "Sem cebola na pizza")
@@ -95,12 +107,36 @@ public class Pedido {
         this.valorTotal = valorTotal;
     }
 
-    public String getEnderecoCoberto() {
-        return enderecoCoberto;
+    public String getEnderecoEntrega() {
+        return enderecoEntrega;
     }
 
-    public void setEnderecoCoberto(String enderecoCoberto) {
-        this.enderecoCoberto = enderecoCoberto;
+    public void setEnderecoEntrega(String enderecoEntrega) {
+        this.enderecoEntrega = enderecoEntrega;
+    }
+
+    public String getCepEntrega() {
+        return cepEntrega;
+    }
+
+    public void setCepEntrega(String cepEntrega) {
+        this.cepEntrega = cepEntrega;
+    }
+
+    public BigDecimal getTaxaEntrega() {
+        return taxaEntrega;
+    }
+
+    public void setTaxaEntrega(BigDecimal taxaEntrega) {
+        this.taxaEntrega = taxaEntrega;
+    }
+
+    public BigDecimal getTotal() {
+        return total;
+    }
+
+    public void setTotal(BigDecimal total) {
+        this.total = total;
     }
 
     public String getObservacoes() {

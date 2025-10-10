@@ -2,15 +2,32 @@ package com.deliverytech.delivery.exception;
 
 public class EntityNotFoundException extends RuntimeException {
     
+    private final String entityName;
+    private final Object entityId;
+    
+    public EntityNotFoundException(String entityName, Object entityId) {
+        super(String.format("%s não encontrado(a) com ID: %s", entityName, entityId));
+        this.entityName = entityName;
+        this.entityId = entityId;
+    }
+    
     public EntityNotFoundException(String message) {
         super(message);
+        this.entityName = null;
+        this.entityId = null;
     }
     
-    public EntityNotFoundException(String entityName, Long id) {
-        super(String.format("%s com ID %d não encontrado", entityName, id));
+    public EntityNotFoundException(String message, Throwable cause) {
+        super(message, cause);
+        this.entityName = null;
+        this.entityId = null;
     }
     
-    public EntityNotFoundException(String entityName, String field, Object value) {
-        super(String.format("%s com %s '%s' não encontrado", entityName, field, value));
+    public String getEntityName() {
+        return entityName;
+    }
+    
+    public Object getEntityId() {
+        return entityId;
     }
 }

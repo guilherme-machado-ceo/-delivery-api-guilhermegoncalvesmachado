@@ -86,4 +86,9 @@ public class ProdutoResponseDTO {
     public void setRestaurante(RestauranteResponseDTO restaurante) {
         this.restaurante = restaurante;
     }
+    
+    // Método auxiliar para obter ID do restaurante
+    public Long getRestauranteId() {
+        return restaurante != null ? restaurante.getId() : null;
+    }
 }

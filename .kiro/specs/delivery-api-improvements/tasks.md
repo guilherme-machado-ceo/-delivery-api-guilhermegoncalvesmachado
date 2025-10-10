@@ -74,7 +74,9 @@
 
 
 
-  - [ ] 4.2 Create OpenAPI configuration class
+  - [x] 4.2 Create OpenAPI configuration class
+
+
     - Define API info (title, version, description)
     - Configure security schemes for JWT
     - Setup tags for endpoint grouping
@@ -104,6 +106,8 @@
 
 - [x] 5. Implement Bean Validation
 
+
+
   - [ ] 5.1 Add validation annotations to entity models
     - Add @NotNull, @NotBlank, @Email annotations to Cliente
     - Add validation annotations to Restaurante model
@@ -114,6 +118,8 @@
 
     - Add validation annotations to Pedido model
     - _Requirements: 3.1, 3.2, 3.3_
+
+
 
 
 
@@ -132,8 +138,15 @@
     - Update method signatures to handle validation
     - _Requirements: 3.1, 3.4_
 
-  - [ ] 5.4 Create DTO classes for API requests and responses
+  - [x] 5.4 Create DTO classes for API requests and responses
+
+
+
+
+
     - Create request DTOs for create/update operations
+
+
     - Create response DTOs for API responses
     - Add validation annotations to DTOs
     - _Requirements: 3.1, 3.2_
@@ -141,8 +154,12 @@
 - [ ] 6. Implement global exception handling
   - [ ] 6.1 Create ErrorResponse and FieldError classes
     - Define standard error response structure
+
+
     - Create classes for field-level validation errors
     - _Requirements: 4.1, 4.2_
+
+
 
   - [ ] 6.2 Create GlobalExceptionHandler with @RestControllerAdvice
     - Handle MethodArgumentNotValidException for validation errors
@@ -157,19 +174,28 @@
     - Create BusinessException for business logic violations
     - _Requirements: 4.2, 4.3_
 
+
+
   - [ ] 6.4 Update services to throw appropriate exceptions
     - Update all service methods to throw custom exceptions
     - Replace generic exceptions with specific ones
     - _Requirements: 4.2, 4.3, 4.4_
+
+
 
 - [x] 7. Implement basic security with Spring Security
 
 
   - [x] 7.1 Add Spring Security and JWT dependencies
 
+
+
     - Add spring-boot-starter-security dependency
     - Add JWT library dependency (jjwt)
     - _Requirements: 5.1_
+
+
+
 
 
   - [ ] 7.2 Create User entity and repository

@@ -5,11 +5,11 @@ import jakarta.validation.Payload;
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = ValidPriceValidator.class)
+@Constraint(validatedBy = ValidCEPValidator.class)
 @Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ValidPrice {
-    String message() default "Preço deve ser positivo e ter no máximo 2 casas decimais";
+public @interface ValidCEP {
+    String message() default "CEP deve estar no formato 00000-000 ou 00000000";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

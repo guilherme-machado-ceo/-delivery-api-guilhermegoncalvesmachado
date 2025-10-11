@@ -2,6 +2,7 @@ package com.deliverytech.delivery.service;
 
 import com.deliverytech.delivery.dto.RestauranteDTO;
 import com.deliverytech.delivery.dto.RestauranteResponseDTO;
+import com.deliverytech.delivery.dto.TaxaEntregaResponse;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public interface RestauranteServiceInterface {
     RestauranteResponseDTO atualizarRestaurante(Long id, RestauranteDTO dto);
     
     /**
-     * Calcula taxa de entrega baseada no CEP
+     * Calcula taxa de entrega baseada no CEP (método legado)
      */
     BigDecimal calcularTaxaEntrega(Long restauranteId, String cep);
     

@@ -1,10 +1,13 @@
 package com.deliverytech.delivery.controller;
 
-import com.deliverytech.delivery.model.Restaurante;
+import com.deliverytech.delivery.dto.RestauranteDTO;
+import com.deliverytech.delivery.dto.RestauranteResponseDTO;
 import com.deliverytech.delivery.service.RestauranteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -15,43 +18,54 @@ public class RestauranteController {
     private RestauranteService restauranteService;
     
     @PostMapping
-    public ResponseEntity<Restaurante> criar(@RequestBody Restaurante restaurante) {
-        return ResponseEntity.ok(restauranteService.cadastrar(restaurante));
+    public ResponseEntity<RestauranteResponseDTO> criar(@Valid @RequestBody RestauranteDTO restauranteDTO) {
+        RestauranteResponseDTO response = restauranteService.criar(restauranteDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
     
     @GetMapping
-    public ResponseEntity<List<Restaurante>> listarTodos() {
-        return ResponseEntity.ok(restauranteService.listarTodos());
+    public ResponseEntity<List<RestauranteResponseDTO>> listarTodos(
+            @RequestParam(required = false) String busca,
+            @RequestParam(required = false) String categoria,
+            @RequestParam(required = false) Boolean ativo) {
+        List<RestauranteResponseDTO> restaurantes = restauranteService.listarTodos(busca, categoria, ativo);
+        return ResponseEntity.ok(restaurantes);
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<Restaurante> buscarPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(restauranteService.buscarPorId(id));
+    public ResponseEntity<RestauranteResponseDTO> buscarPorId(@PathVariable Long id) {
+        RestauranteResponseDTO restaurante = restauranteService.buscarPorId(id);
+        return ResponseEntity.ok(restaurante);
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<Restaurante> atualizar(@PathVariable Long id, @RequestBody Restaurante restaurante) {
-        return ResponseEntity.ok(restauranteService.atualizar(id, restaurante));
+    public ResponseEntity<RestauranteResponseDTO> atualizar(@PathVariable Long id, 
+                                                           @Valid @RequestBody RestauranteDTO restauranteDTO) {
+        RestauranteResponseDTO response = restauranteService.atualizar(id, restauranteDTO);
+        return ResponseEntity.ok(response);
     }
     
     @PatchMapping("/{id}/status")
-    public ResponseEntity<Void> alterarStatus(@PathVariable Long id, @RequestParam boolean ativo) {
-        restauranteService.alterarStatus(id, ativo);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<RestauranteResponseDTO> alterarStatus(@PathVariable Long id) {
+        RestauranteResponseDTO response = restauranteService.alterarStatus(id);
+        return ResponseEntity.ok(response);
     }
     
     @GetMapping("/categoria/{categoria}")
-    public ResponseEntity<List<Restaurante>> buscarPorCategoria(@PathVariable String categoria) {
-        return ResponseEntity.ok(restauranteService.buscarPorCategoria(categoria));
+    public ResponseEntity<List<RestauranteResponseDTO>> buscarPorCategoria(@PathVariable String categoria) {
+        List<RestauranteResponseDTO> restaurantes = restauranteService.buscarPorCategoria(categoria);
+        return ResponseEntity.ok(restaurantes);
     }
     
     @GetMapping("/busca")
-    public ResponseEntity<List<Restaurante>> buscarPorNome(@RequestParam String nome) {
-        return ResponseEntity.ok(restauranteService.buscarPorNome(nome));
+    public ResponseEntity<List<RestauranteResponseDTO>> buscarPorNome(@RequestParam String nome) {
+        List<RestauranteResponseDTO> restaurantes = restauranteService.buscarPorNome(nome);
+        return ResponseEntity.ok(restaurantes);
     }
     
-    @GetMapping("/avaliacoes")
-    public ResponseEntity<List<Restaurante>> listarPorAvaliacao() {
-        return ResponseEntity.ok(restauranteService.listarPorAvaliacao());
+    @GetMapping("/ativos")
+    public ResponseEntity<List<RestauranteResponseDTO>> listarAtivos() {
+        List<RestauranteResponseDTO> restaurantes = restauranteService.buscarRestaurantesDisponiveis();
+        return ResponseEntity.ok(restaurantes);
     }
 }

@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidCEP {
-    String message() default "CEP deve estar no formato 00000-000 ou 00000000";
+    String message() default "CEP inválido";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

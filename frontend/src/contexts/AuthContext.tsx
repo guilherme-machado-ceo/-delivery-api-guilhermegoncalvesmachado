@@ -36,7 +36,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   // API Base URL
-  const API_BASE_URL = 'http://localhost:8080/api';
+  const API_BASE_URL = 'http://localhost:9090/api';
 
   useEffect(() => {
     // Verificar se há token salvo no localStorage

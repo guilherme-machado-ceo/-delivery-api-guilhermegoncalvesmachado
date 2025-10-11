@@ -1,6 +1,5 @@
 package com.deliverytech.delivery.security;
 
-import com.deliverytech.delivery.model.Role;
 import com.deliverytech.delivery.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

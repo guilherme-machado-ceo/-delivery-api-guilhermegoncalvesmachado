@@ -1,4 +1,4 @@
-import React from 'react';
+// React import não necessário
 import { ArrowRight, Play, Code, Database, Shield } from 'lucide-react';
 
 const Hero = () => {

@@ -1,4 +1,4 @@
-import React from 'react';
+// React import não necessário
 
 const TechStack = () => {
   const technologies = {

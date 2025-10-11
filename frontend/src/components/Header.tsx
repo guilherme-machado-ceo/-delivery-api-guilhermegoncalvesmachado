@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { 
@@ -21,12 +21,12 @@ const Header = () => {
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   const publicNavItems = [
-    { path: '/', label: 'Home', icon: Pizza },
-    { path: '/about', label: 'Sobre', icon: Info },
+    { path: '/', label: 'Home', icon: Pizza, roles: undefined },
+    { path: '/about', label: 'Sobre', icon: Info, roles: undefined },
   ];
 
   const privateNavItems = [
-    { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: undefined },
     { path: '/clientes', label: 'Clientes', icon: Users, roles: ['USER', 'ADMIN', 'MANAGER'] },
     { path: '/restaurantes', label: 'Restaurantes', icon: Store, roles: ['ADMIN', 'MANAGER'] },
     { path: '/produtos', label: 'Produtos', icon: Package, roles: ['ADMIN', 'MANAGER'] },

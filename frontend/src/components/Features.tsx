@@ -1,4 +1,4 @@
-import React from 'react';
+// React import não necessário
 import { Shield, Zap, Code, Database, Users, CheckCircle } from 'lucide-react';
 
 const Features = () => {

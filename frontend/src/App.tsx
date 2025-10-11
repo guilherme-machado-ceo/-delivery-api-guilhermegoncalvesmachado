@@ -1,15 +1,16 @@
-import React from 'react';
+// React import não necessário com JSX Transform
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/AuthContext';
 import Header from './components/Header';
-import Footer from './components/Footer';
+// import Footer from './components/Footer';
 import Hero from './components/Hero';
 import Features from './components/Features';
 import ApiDemo from './components/ApiDemo';
 import TechStack from './components/TechStack';
 import Dashboard from './pages/Dashboard';
 import Clientes from './pages/Clientes';
+import Restaurantes from './pages/Restaurantes';
 import ProtectedRoute from './components/ProtectedRoute';
 import './index.css';
 
@@ -85,12 +86,7 @@ function App() {
                 path="/restaurantes" 
                 element={
                   <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER']}>
-                    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                      <div className="text-center">
-                        <h1 className="text-2xl font-bold text-gray-900 mb-4">Gestão de Restaurantes</h1>
-                        <p className="text-gray-600">Em desenvolvimento...</p>
-                      </div>
-                    </div>
+                    <Restaurantes />
                   </ProtectedRoute>
                 } 
               />
@@ -168,7 +164,7 @@ function App() {
             </Routes>
           </main>
           
-          <Footer />
+          {/* <Footer /> */}
         </div>
       </Router>
     </AuthProvider>

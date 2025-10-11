@@ -13,50 +13,51 @@ import java.util.stream.Collectors;
 
 @Component
 public class JwtTokenProvider {
-    
+
     private final SecretKey key;
     private final int jwtExpirationInMs;
-    
-    public JwtTokenProvider(@Value("${app.jwt.secret:myVerySecretKeyThatIsLongEnoughForHS512Algorithm}") String jwtSecret,
-                           @Value("${app.jwt.expiration:86400000}") int jwtExpirationInMs) {
+
+    public JwtTokenProvider(
+            @Value("${app.jwt.secret:myVerySecretKeyThatIsLongEnoughForHS512Algorithm}") String jwtSecret,
+            @Value("${app.jwt.expiration:86400000}") int jwtExpirationInMs) {
         this.key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
         this.jwtExpirationInMs = jwtExpirationInMs;
     }
-    
+
     public String generateToken(Authentication authentication) {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         Date expiryDate = new Date(System.currentTimeMillis() + jwtExpirationInMs);
-        
+
         String roles = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
-        
+
         return Jwts.builder()
-                .setSubject(userPrincipal.getUsername())
+                .subject(userPrincipal.getUsername())
                 .claim("roles", roles)
                 .claim("userId", userPrincipal.getId())
-                .setIssuedAt(new Date())
-                .setExpiration(expiryDate)
-                .signWith(key, SignatureAlgorithm.HS512)
+                .issuedAt(new Date())
+                .expiration(expiryDate)
+                .signWith(key)
                 .compact();
     }
-    
+
     public String getUsernameFromToken(String token) {
         Claims claims = Jwts.parser()
-                .setSigningKey(key)
+                .verifyWith(key)
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
-        
+                .parseSignedClaims(token)
+                .getPayload();
+
         return claims.getSubject();
     }
-    
+
     public boolean validateToken(String authToken) {
         try {
             Jwts.parser()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(authToken);
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(authToken);
             return true;
         } catch (SecurityException ex) {
             System.err.println("Invalid JWT signature");

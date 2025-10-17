@@ -27,37 +27,46 @@
   - [x] 1.4 Implementar paginação no endpoint GET /api/restaurantes
 
 
+
+
     - Modificar método para aceitar Pageable
     - Retornar PagedResponse com metadados
     - Adicionar links de navegação (first, last, next, prev)
     - _Requirements: 6.4_
+
 
 - [ ] 2. Implementar ProdutoController completo
   - [ ] 2.1 Criar estrutura básica do ProdutoController
     - Criar classe controller com @RestController e @RequestMapping
     - Adicionar @Tag para documentação Swagger
     - Injetar ProdutoService
+
     - _Requirements: 2.1_
 
   - [ ] 2.2 Implementar CRUD básico de produtos
     - POST /api/produtos - Criar produto
     - GET /api/produtos/{id} - Buscar por ID
     - PUT /api/produtos/{id} - Atualizar produto
+
     - DELETE /api/produtos/{id} - Remover produto
     - _Requirements: 2.1, 2.2_
 
   - [ ] 2.3 Implementar endpoints especiais de produtos
     - PATCH /api/produtos/{id}/disponibilidade - Toggle disponibilidade
     - GET /api/restaurantes/{restauranteId}/produtos - Produtos do restaurante
+
+
     - GET /api/produtos/categoria/{categoria} - Por categoria
     - GET /api/produtos/buscar?nome={nome} - Busca por nome
     - _Requirements: 2.2, 2.4_
+
 
   - [ ] 2.4 Adicionar documentação Swagger ao ProdutoController
     - Documentar todos os endpoints com @Operation
     - Adicionar exemplos de request/response
     - Documentar códigos de erro possíveis
     - _Requirements: 5.1, 5.2, 5.3_
+
 
 - [ ] 3. Implementar PedidoController avançado
   - [ ] 3.1 Criar estrutura do PedidoController
@@ -66,25 +75,31 @@
     - Configurar documentação Swagger inicial
     - _Requirements: 3.1_
 
+
   - [ ] 3.2 Implementar operações básicas de pedidos
     - POST /api/pedidos - Criar pedido completo com itens
     - GET /api/pedidos/{id} - Buscar pedido completo
     - GET /api/pedidos - Listar com filtros (status, data)
     - PATCH /api/pedidos/{id}/status - Atualizar status
+
+
     - _Requirements: 3.1, 3.2_
 
   - [ ] 3.3 Implementar operações avançadas de pedidos
     - DELETE /api/pedidos/{id} - Cancelar pedido
+
     - GET /api/clientes/{clienteId}/pedidos - Histórico do cliente
     - GET /api/restaurantes/{restauranteId}/pedidos - Pedidos do restaurante
     - POST /api/pedidos/calcular - Calcular total sem salvar
     - _Requirements: 3.3, 3.4_
+
 
   - [ ] 3.4 Implementar filtros e paginação para pedidos
     - Adicionar filtros por status, data, cliente, restaurante
     - Implementar paginação com metadados
     - Adicionar ordenação por data de criação
     - _Requirements: 6.4_
+
 
 - [ ] 4. Criar RelatorioController novo
   - [ ] 4.1 Criar estrutura do RelatorioController

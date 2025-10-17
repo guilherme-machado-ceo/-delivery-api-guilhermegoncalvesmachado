@@ -2,7 +2,9 @@ package com.deliverytech.delivery.service;
 
 import com.deliverytech.delivery.dto.*;
 import com.deliverytech.delivery.model.StatusPedido;
+import org.springframework.data.domain.Pageable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface PedidoServiceInterface {
@@ -47,4 +49,22 @@ public interface PedidoServiceInterface {
      * Busca pedidos recentes (últimos 10)
      */
     List<PedidoResumoDTO> buscarPedidosRecentes();
+    
+    /**
+     * Lista pedidos com filtros e paginação
+     */
+    PagedResponse<PedidoResumoDTO> listarPedidosComFiltros(
+        StatusPedido status, 
+        java.time.LocalDate dataInicio, 
+        java.time.LocalDate dataFim, 
+        Long clienteId, 
+        Long restauranteId, 
+        org.springframework.data.domain.Pageable pageable, 
+        String baseUrl
+    );
+    
+    /**
+     * Busca pedidos por restaurante
+     */
+    List<PedidoResumoDTO> buscarPedidosPorRestaurante(Long restauranteId);
 }

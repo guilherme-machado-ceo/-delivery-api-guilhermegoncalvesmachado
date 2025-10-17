@@ -40,4 +40,9 @@ public interface ProdutoServiceInterface {
      * Lista todos os produtos disponíveis
      */
     List<ProdutoResponseDTO> listarProdutosDisponiveis();
+    
+    /**
+     * Busca produtos por nome (contém)
+     */
+    List<ProdutoResponseDTO> buscarProdutosPorNome(String nome);
 }

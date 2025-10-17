@@ -6,10 +6,13 @@ import com.deliverytech.delivery.model.*;
 import com.deliverytech.delivery.repository.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -230,5 +233,32 @@ public class PedidoService implements PedidoServiceInterface {
         return status == StatusPedido.PENDENTE || 
                status == StatusPedido.CONFIRMADO || 
                status == StatusPedido.PREPARANDO;
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public PagedResponse<PedidoResumoDTO> listarPedidosComFiltros(
+            StatusPedido status, LocalDate dataInicio, LocalDate dataFim, 
+            Long clienteId, Long restauranteId, Pageable pageable, String baseUrl) {
+        
+        Page<Pedido> pedidosPage = pedidoRepository.findWithFilters(
+            status, dataInicio, dataFim, clienteId, restauranteId, pageable);
+        
+        Page<PedidoResumoDTO> pedidosResponsePage = pedidosPage.map(
+            pedido -> modelMapper.map(pedido, PedidoResumoDTO.class));
+        
+        return PagedResponse.of(pedidosResponsePage, baseUrl);
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List<PedidoResumoDTO> buscarPedidosPorRestaurante(Long restauranteId) {
+        // Validar se restaurante existe
+        restauranteService.buscarRestaurantePorId(restauranteId);
+        
+        List<Pedido> pedidos = pedidoRepository.findByRestauranteIdOrderByDataPedidoDesc(restauranteId);
+        return pedidos.stream()
+                .map(pedido -> modelMapper.map(pedido, PedidoResumoDTO.class))
+                .collect(Collectors.toList());
     }
 }

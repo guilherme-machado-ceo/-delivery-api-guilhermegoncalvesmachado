@@ -141,6 +141,22 @@ public class ProdutoService implements ProdutoServiceInterface {
                 .collect(Collectors.toList());
     }
     
+    /**
+     * Busca produtos por nome (contém)
+     */
+    @Transactional(readOnly = true)
+    public List<ProdutoResponseDTO> buscarProdutosPorNome(String nome) {
+        if (nome == null || nome.trim().isEmpty()) {
+            return List.of();
+        }
+        
+        List<Produto> produtos = produtoRepository.findByNomeContainingIgnoreCaseAndDisponivelTrue(nome.trim());
+        
+        return produtos.stream()
+                .map(produto -> modelMapper.map(produto, ProdutoResponseDTO.class))
+                .collect(Collectors.toList());
+    }
+    
     // Métodos legados para compatibilidade (deprecated)
     @Deprecated
     public Produto cadastrar(Produto produto, Long restauranteId) {

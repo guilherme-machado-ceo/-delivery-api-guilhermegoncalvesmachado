@@ -40,6 +40,19 @@ public class RestauranteResponseDTO {
             example = "2024-01-20T14:45:30")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime atualizadoEm;
+    
+    // Campos adicionais para busca por proximidade
+    @Schema(description = "Distância em quilômetros (calculada dinamicamente)", example = "2.5")
+    private Double distanciaKm;
+    
+    @Schema(description = "Tempo estimado de entrega (calculado dinamicamente)", example = "25-35 min")
+    private String tempoEntregaEstimado;
+    
+    @Schema(description = "Taxa de entrega calculada para um CEP específico", example = "7.50")
+    private BigDecimal taxaEntregaCalculada;
+    
+    @Schema(description = "Indica se a entrega está disponível para o CEP consultado", example = "true")
+    private Boolean entregaDisponivel;
 
     // Constructors
     public RestauranteResponseDTO() {}
@@ -140,6 +153,38 @@ public class RestauranteResponseDTO {
 
     public void setAtualizadoEm(LocalDateTime atualizadoEm) {
         this.atualizadoEm = atualizadoEm;
+    }
+    
+    public Double getDistanciaKm() {
+        return distanciaKm;
+    }
+    
+    public void setDistanciaKm(Double distanciaKm) {
+        this.distanciaKm = distanciaKm;
+    }
+    
+    public String getTempoEntregaEstimado() {
+        return tempoEntregaEstimado;
+    }
+    
+    public void setTempoEntregaEstimado(String tempoEntregaEstimado) {
+        this.tempoEntregaEstimado = tempoEntregaEstimado;
+    }
+    
+    public BigDecimal getTaxaEntregaCalculada() {
+        return taxaEntregaCalculada;
+    }
+    
+    public void setTaxaEntregaCalculada(BigDecimal taxaEntregaCalculada) {
+        this.taxaEntregaCalculada = taxaEntregaCalculada;
+    }
+    
+    public Boolean getEntregaDisponivel() {
+        return entregaDisponivel;
+    }
+    
+    public void setEntregaDisponivel(Boolean entregaDisponivel) {
+        this.entregaDisponivel = entregaDisponivel;
     }
 
     // Métodos utilitários para compatibilidade com frontend

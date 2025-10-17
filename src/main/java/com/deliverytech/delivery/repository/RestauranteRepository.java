@@ -2,6 +2,8 @@ package com.deliverytech.delivery.repository;
 
 import com.deliverytech.delivery.model.Restaurante;
 import java.math.BigDecimal;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -73,4 +75,31 @@ public interface RestauranteRepository extends JpaRepository<Restaurante, Long> 
     
     @Query("SELECT COUNT(DISTINCT r.categoria) FROM Restaurante r WHERE r.ativo = true")
     long countCategoriasAtivas();
+    
+    // Métodos com paginação
+    @Query("SELECT r FROM Restaurante r WHERE " +
+           "(:nome IS NULL OR LOWER(r.nome) LIKE LOWER(CONCAT('%', :nome, '%'))) AND " +
+           "(:categoria IS NULL OR LOWER(r.categoria) LIKE LOWER(CONCAT('%', :categoria, '%'))) AND " +
+           "(:endereco IS NULL OR LOWER(r.endereco) LIKE LOWER(CONCAT('%', :endereco, '%'))) AND " +
+           "(:ativo IS NULL OR r.ativo = :ativo)")
+    Page<Restaurante> findWithFiltersPageable(@Param("nome") String nome, 
+                                             @Param("categoria") String categoria,
+                                             @Param("endereco") String endereco,
+                                             @Param("ativo") Boolean ativo,
+                                             Pageable pageable);
+    
+    @Query("SELECT r FROM Restaurante r WHERE " +
+           "LOWER(r.nome) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
+           "LOWER(r.categoria) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
+           "LOWER(r.endereco) LIKE LOWER(CONCAT('%', :texto, '%'))")
+    Page<Restaurante> findByTextoGeralPageable(@Param("texto") String texto, Pageable pageable);
+    
+    @Query("SELECT r FROM Restaurante r WHERE " +
+           "(LOWER(r.nome) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
+           "LOWER(r.categoria) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
+           "LOWER(r.endereco) LIKE LOWER(CONCAT('%', :texto, '%'))) AND " +
+           "(:ativo IS NULL OR r.ativo = :ativo)")
+    Page<Restaurante> findByTextoGeralAndAtivoPageable(@Param("texto") String texto, 
+                                                      @Param("ativo") Boolean ativo, 
+                                                      Pageable pageable);
 }

@@ -14,6 +14,8 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
@@ -88,6 +90,30 @@ public class RestauranteService implements RestauranteServiceInterface {
         return restaurantes.stream()
                 .map(this::convertToResponseDTO)
                 .collect(Collectors.toList());
+    }
+    
+    /**
+     * Lista todos os restaurantes com filtros opcionais e paginação
+     */
+    @Transactional(readOnly = true)
+    public Page<RestauranteResponseDTO> listarTodosPaginado(String busca, String categoria, Boolean ativo, Pageable pageable) {
+        logger.info("Listando restaurantes paginado - busca: {}, categoria: {}, ativo: {}, page: {}, size: {}", 
+                   busca, categoria, ativo, pageable.getPageNumber(), pageable.getPageSize());
+        
+        Page<Restaurante> restaurantesPage;
+        
+        // Usar queries otimizadas do repository com paginação
+        if (busca != null && !busca.trim().isEmpty()) {
+            if (ativo != null) {
+                restaurantesPage = restauranteRepository.findByTextoGeralAndAtivoPageable(busca.trim(), ativo, pageable);
+            } else {
+                restaurantesPage = restauranteRepository.findByTextoGeralPageable(busca.trim(), pageable);
+            }
+        } else {
+            restaurantesPage = restauranteRepository.findWithFiltersPageable(null, categoria, null, ativo, pageable);
+        }
+        
+        return restaurantesPage.map(this::convertToResponseDTO);
     }
     
     /**
@@ -371,6 +397,66 @@ public class RestauranteService implements RestauranteServiceInterface {
      */
     public TaxaEntregaResponse calcularTaxaEntregaCompleta(Long restauranteId, String cep) {
         return calcularTaxaEntregaDetalhada(restauranteId, cep);
+    }
+    
+    /**
+     * Busca restaurantes próximos a um CEP específico
+     */
+    @Transactional(readOnly = true)
+    public List<RestauranteResponseDTO> buscarRestaurantesProximos(String cep) {
+        logger.info("Buscando restaurantes próximos ao CEP: {}", cep);
+        
+        // Validar CEP
+        if (cep == null || cep.trim().isEmpty()) {
+            throw new BusinessException("CEP é obrigatório");
+        }
+        
+        // Normalizar CEP (remover caracteres especiais)
+        String cepLimpo = cep.replaceAll("[^0-9]", "");
+        if (cepLimpo.length() != 8) {
+            throw new BusinessException("CEP deve ter 8 dígitos");
+        }
+        
+        // Buscar todos os restaurantes ativos
+        List<Restaurante> restaurantesAtivos = restauranteRepository.findByAtivoTrue();
+        
+        // Calcular distância e ordenar por proximidade
+        List<RestauranteResponseDTO> restaurantesComDistancia = restaurantesAtivos.stream()
+                .map(restaurante -> {
+                    RestauranteResponseDTO dto = convertToResponseDTO(restaurante);
+                    
+                    try {
+                        // Calcular taxa de entrega (que inclui distância)
+                        TaxaEntregaResponse taxaResponse = calcularTaxaEntregaDetalhada(restaurante.getId(), cep);
+                        
+                        // Adicionar informações de entrega ao DTO
+                        dto.setDistanciaKm(taxaResponse.getDistancia());
+                        dto.setTempoEntregaEstimado(taxaResponse.getTempoEstimado());
+                        dto.setTaxaEntregaCalculada(taxaResponse.getTaxaEntrega());
+                        dto.setEntregaDisponivel(taxaResponse.getEntregaDisponivel());
+                        
+                    } catch (Exception e) {
+                        logger.warn("Erro ao calcular distância para restaurante {}: {}", restaurante.getId(), e.getMessage());
+                        // Definir valores padrão em caso de erro
+                        dto.setDistanciaKm(999.0); // Distância alta para ficar no final da lista
+                        dto.setTempoEntregaEstimado("Indisponível");
+                        dto.setEntregaDisponivel(false);
+                    }
+                    
+                    return dto;
+                })
+                .filter(dto -> dto.getEntregaDisponivel() != null && dto.getEntregaDisponivel()) // Apenas com entrega disponível
+                .sorted((a, b) -> {
+                    // Ordenar por distância (mais próximo primeiro)
+                    if (a.getDistanciaKm() == null) return 1;
+                    if (b.getDistanciaKm() == null) return -1;
+                    return Double.compare(a.getDistanciaKm(), b.getDistanciaKm());
+                })
+                .limit(20) // Limitar a 20 restaurantes mais próximos
+                .collect(Collectors.toList());
+        
+        logger.info("Encontrados {} restaurantes próximos ao CEP {}", restaurantesComDistancia.size(), cep);
+        return restaurantesComDistancia;
     }
     
     @Override

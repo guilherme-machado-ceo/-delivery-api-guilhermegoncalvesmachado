@@ -2,6 +2,7 @@ package com.deliverytech.delivery.exception;
 
 import com.deliverytech.delivery.dto.ErrorResponse;
 import com.deliverytech.delivery.dto.FieldError;
+import com.deliverytech.delivery.dto.ValidationErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +22,7 @@ public class GlobalExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationException(
+    public ResponseEntity<ValidationErrorResponse> handleValidationException(
             MethodArgumentNotValidException ex, HttpServletRequest request) {
         
         logger.warn("Validation error on {}: {}", request.getRequestURI(), ex.getMessage());
@@ -33,13 +34,7 @@ public class GlobalExceptionHandler {
                         error.getDefaultMessage()))
                 .collect(Collectors.toList());
 
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                "Bad Request",
-                "Dados de entrada inválidos",
-                request.getRequestURI()
-        );
-        errorResponse.setFieldErrors(fieldErrors);
+        ValidationErrorResponse errorResponse = ValidationErrorResponse.of(fieldErrors);
 
         return ResponseEntity.badRequest().body(errorResponse);
     }
@@ -50,12 +45,7 @@ public class GlobalExceptionHandler {
         
         logger.warn("Entity not found on {}: {}", request.getRequestURI(), ex.getMessage());
         
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.NOT_FOUND.value(),
-                "Not Found",
-                ex.getMessage(),
-                request.getRequestURI()
-        );
+        ErrorResponse errorResponse = ErrorResponse.of("ENTITY_NOT_FOUND", ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
@@ -66,12 +56,7 @@ public class GlobalExceptionHandler {
         
         logger.warn("Duplicate resource on {}: {}", request.getRequestURI(), ex.getMessage());
         
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.CONFLICT.value(),
-                "Conflict",
-                ex.getMessage(),
-                request.getRequestURI()
-        );
+        ErrorResponse errorResponse = ErrorResponse.of("DUPLICATE_RESOURCE", ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
@@ -82,12 +67,7 @@ public class GlobalExceptionHandler {
         
         logger.warn("Business rule violation on {}: {}", request.getRequestURI(), ex.getMessage());
         
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                "Bad Request",
-                ex.getMessage(),
-                request.getRequestURI()
-        );
+        ErrorResponse errorResponse = ErrorResponse.of("BUSINESS_RULE_VIOLATION", ex.getMessage());
 
         return ResponseEntity.badRequest().body(errorResponse);
     }
@@ -99,16 +79,21 @@ public class GlobalExceptionHandler {
         logger.error("Data integrity violation on {}: {}", request.getRequestURI(), ex.getMessage());
         
         String message = "Violação de integridade dos dados";
-        if (ex.getMessage() != null && ex.getMessage().contains("email")) {
-            message = "Email já está em uso";
+        String details = null;
+        
+        if (ex.getMessage() != null) {
+            if (ex.getMessage().contains("email")) {
+                message = "Email já está em uso";
+                details = "O email informado já está cadastrado no sistema";
+            } else if (ex.getMessage().contains("unique")) {
+                message = "Dados duplicados";
+                details = "Os dados informados já existem no sistema";
+            }
         }
         
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.CONFLICT.value(),
-                "Conflict",
-                message,
-                request.getRequestURI()
-        );
+        ErrorResponse errorResponse = details != null ? 
+            ErrorResponse.of("DATA_INTEGRITY_VIOLATION", message, details) :
+            ErrorResponse.of("DATA_INTEGRITY_VIOLATION", message);
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
@@ -119,11 +104,10 @@ public class GlobalExceptionHandler {
         
         logger.error("Unexpected error on {}: {}", request.getRequestURI(), ex.getMessage(), ex);
         
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Internal Server Error",
-                "Erro interno do servidor",
-                request.getRequestURI()
+        ErrorResponse errorResponse = ErrorResponse.of(
+            "INTERNAL_SERVER_ERROR", 
+            "Erro interno do servidor",
+            "Ocorreu um erro inesperado. Tente novamente mais tarde."
         );
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);

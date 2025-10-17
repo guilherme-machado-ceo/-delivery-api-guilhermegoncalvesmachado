@@ -1,0 +1,33 @@
+info:
+  app:
+    name: DeliveryTech API
+    description: API completa para sistema de delivery
+    version: 0.0.1-SNAPSHOT
+    encoding: UTF-8
+    java:
+      version: 21
+  build:
+    artifact: delivery-api
+    group: com.deliverytech
+  contact:
+    name: Guilherme Gonçalves Machado
+    email: guilherme@deliverytech.com
+  features:
+    - "API REST completa"
+    - "Documentação Swagger/OpenAPI"
+    - "Respostas padronizadas"
+    - "Paginação avançada"
+    - "Cache inteligente"
+    - "Métricas customizadas"
+    - "Monitoramento com Actuator"
+    - "Relatórios de negócio"
+  endpoints:
+    restaurantes: "/api/restaurantes"
+    produtos: "/api/produtos"
+    pedidos: "/api/pedidos"
+    clientes: "/api/clientes"
+    relatorios: "/api/relatorios"
+    swagger: "/swagger-ui.html"
+    actuator: "/actuator"
+    health: "/actuator/health"
+    metrics: "/actuator/metrics"

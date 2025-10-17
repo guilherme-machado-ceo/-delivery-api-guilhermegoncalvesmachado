@@ -14,6 +14,8 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -284,6 +286,7 @@ public class RestauranteService implements RestauranteServiceInterface {
      * Busca restaurante por ID
      */
     @Transactional(readOnly = true)
+    @Cacheable(value = "restaurantes", key = "#id")
     public RestauranteResponseDTO buscarPorId(Long id) {
         logger.info("Buscando restaurante por ID: {}", id);
         
@@ -296,6 +299,7 @@ public class RestauranteService implements RestauranteServiceInterface {
     /**
      * Atualiza um restaurante
      */
+    @CacheEvict(value = "restaurantes", key = "#id")
     public RestauranteResponseDTO atualizar(Long id, RestauranteDTO dto) {
         logger.info("Atualizando restaurante ID {}: {}", id, dto.getNome());
         
@@ -332,6 +336,7 @@ public class RestauranteService implements RestauranteServiceInterface {
     /**
      * Alterna o status ativo/inativo do restaurante
      */
+    @CacheEvict(value = "restaurantes", key = "#id")
     public RestauranteResponseDTO alterarStatus(Long id) {
         logger.info("Alterando status do restaurante ID: {}", id);
         

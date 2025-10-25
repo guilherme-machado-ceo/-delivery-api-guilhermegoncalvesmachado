@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <!-- Root logger configuration -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+    
+    <!-- Application specific loggers -->
+    <logger name="com.deliverytech" level="DEBUG"/>
+    
+    <!-- Spring Framework loggers -->
+    <logger name="org.springframework.web" level="DEBUG"/>
+    <logger name="org.springframework.test" level="DEBUG"/>
+    
+    <!-- Hibernate loggers -->
+    <logger name="org.hibernate.SQL" level="DEBUG"/>
+    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE"/>
+    
+    <!-- H2 Database logger -->
+    <logger name="org.h2" level="WARN"/>
+    
+    <!-- Test execution logger -->
+    <logger name="org.junit" level="INFO"/>
+    <logger name="org.mockito" level="WARN"/>
+</configuration>

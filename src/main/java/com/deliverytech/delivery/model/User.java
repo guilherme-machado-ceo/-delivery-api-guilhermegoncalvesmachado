@@ -1,99 +1,108 @@
 package com.deliverytech.delivery.model;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
-@Table(name = "users")
-@Schema(description = "Entidade que representa um usuário do sistema")
-public class User {
-    
+@Table(name = "usuario")
+@Getter
+@Setter
+@NoArgsConstructor
+public class User implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Schema(description = "ID único do usuário", example = "1")
     private Long id;
-    
-    @NotBlank(message = "Username é obrigatório")
-    @Size(min = 3, max = 50, message = "Username deve ter entre 3 e 50 caracteres")
+
+    @NotBlank(message = "Nome é obrigatório")
+    private String nome;
+
+    @Email(message = "Email deve ser válido")
+    @NotBlank(message = "Email é obrigatório")
     @Column(unique = true)
-    @Schema(description = "Nome de usuário único", example = "admin", required = true)
-    private String username;
-    
-    @NotBlank(message = "Password é obrigatório")
-    @Size(min = 6, message = "Password deve ter no mínimo 6 caracteres")
-    @Schema(description = "Senha do usuário (criptografada)", required = true)
-    private String password;
-    
-    @Schema(description = "Status ativo do usuário", example = "true")
-    private boolean enabled = true;
-    
-    @Schema(description = "Data de criação do usuário")
-    private LocalDateTime createdAt = LocalDateTime.now();
-    
-    @ElementCollection(fetch = FetchType.EAGER)
+    private String email;
+
+    @NotBlank(message = "Senha é obrigatória")
+    @Size(min = 6, message = "Senha deve ter no mínimo 6 caracteres")
+    @JsonIgnore
+    private String senha;
+
     @Enumerated(EnumType.STRING)
-    @Schema(description = "Roles/papéis do usuário")
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name="usuario_roles", joinColumns=@JoinColumn(name="usuario_id"))
     private Set<Role> roles;
+
+    private boolean ativo = true;
+
+    private LocalDateTime dataCriacao = LocalDateTime.now();
     
-    // Constructors
-    public User() {}
-    
-    public User(String username, String password, Set<Role> roles) {
-        this.username = username;
-        this.password = password;
+    private Long restauranteId;
+
+    public User(String nome, String email, String senha, Set<Role> roles, Long restauranteId) {
+        this.nome = nome;
+        this.email = email;
+        this.senha = senha;
         this.roles = roles;
+        this.restauranteId = restauranteId;
+        this.ativo = true;
+        this.dataCriacao = LocalDateTime.now();
     }
     
-    // Getters and Setters
-    public Long getId() {
-        return id;
+    // Implementação UserDetails
+
+    @Override
+    @JsonIgnore
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (roles == null) {
+            return Collections.emptyList();
+        }
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
+                .collect(Collectors.toList());
     }
-    
-    public void setId(Long id) {
-        this.id = id;
-    }
-    
-    public String getUsername() {
-        return username;
-    }
-    
-    public void setUsername(String username) {
-        this.username = username;
-    }
-    
+
+    @Override
     public String getPassword() {
-        return password;
+        return this.senha;
     }
-    
-    public void setPassword(String password) {
-        this.password = password;
+
+    @Override
+    public String getUsername() {
+        return this.email;
     }
-    
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
     public boolean isEnabled() {
-        return enabled;
-    }
-    
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-    
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-    
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-    
-    public Set<Role> getRoles() {
-        return roles;
-    }
-    
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
+        return this.ativo;
     }
 }

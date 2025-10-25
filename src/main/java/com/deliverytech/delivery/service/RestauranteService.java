@@ -25,9 +25,19 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+import com.deliverytech.delivery.util.SecurityUtils;
+
+@Service("restauranteService")
 @Transactional
 public class RestauranteService implements RestauranteServiceInterface {
+
+    public boolean isOwner(Long restauranteId) {
+        if (restauranteId == null) {
+            return false;
+        }
+        Long currentRestauranteId = SecurityUtils.getCurrentUser().getRestauranteId();
+        return restauranteId.equals(currentRestauranteId);
+    }
     
     private static final Logger logger = LoggerFactory.getLogger(RestauranteService.class);
     
@@ -681,5 +691,9 @@ public class RestauranteService implements RestauranteServiceInterface {
     @Deprecated
     public List<Restaurante> listarPorAvaliacao() {
         return restauranteRepository.findByAtivoTrue();
+    }
+
+    public void deletarRestaurante(Long id) {
+        restauranteRepository.deleteById(id);
     }
 }

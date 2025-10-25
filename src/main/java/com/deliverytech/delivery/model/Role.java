@@ -1,9 +1,8 @@
 package com.deliverytech.delivery.model;
 
 public enum Role {
+    CLIENTE,
+    RESTAURANTE,
     ADMIN,
-    MANAGER,
-    USER,
-    CUSTOMER,
-    RESTAURANT_OWNER
+    ENTREGADOR
 }

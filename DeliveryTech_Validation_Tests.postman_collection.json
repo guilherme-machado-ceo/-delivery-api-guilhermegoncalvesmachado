@@ -1,0 +1,561 @@
+{
+	"info": {
+		"_postman_id": "delivery-validation-tests",
+		"name": "DeliveryTech - Testes de Validação",
+		"description": "Collection completa para testar todas as validações e tratamentos de erro do sistema DeliveryTech",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Cenários de Sucesso",
+			"item": [
+				{
+					"name": "Criar Restaurante Válido",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nome\": \"Pizzaria do João\",\n  \"categoria\": \"PIZZARIA\",\n  \"endereco\": \"Rua das Pizzas, 456 - Centro - São Paulo/SP - CEP: 01234-567\",\n  \"telefone\": \"(11) 99999-9999\",\n  \"taxaEntrega\": 5.50,\n  \"tempoEntrega\": 45,\n  \"horarioFuncionamento\": \"08:00-22:00\",\n  \"avaliacao\": 4.5\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/restaurantes",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "restaurantes"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Produto Válido",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nome\": \"Pizza Margherita\",\n  \"descricao\": \"Deliciosa pizza com molho de tomate artesanal, mussarela de búfala e manjericão fresco\",\n  \"preco\": 25.90,\n  \"categoria\": \"Pizza\",\n  \"restauranteId\": 1,\n  \"disponivel\": true,\n  \"tempoPreparo\": 15\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/produtos",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "produtos"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Pedido Válido",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"clienteId\": 1,\n  \"restauranteId\": 1,\n  \"enderecoEntrega\": \"Rua das Flores, 123, Apto 45 - Jardim Paulista - São Paulo/SP\",\n  \"cepEntrega\": \"01234-567\",\n  \"observacoes\": \"Sem cebola na pizza\",\n  \"itens\": [\n    {\n      \"produtoId\": 1,\n      \"quantidade\": 2,\n      \"observacoes\": \"Bem assada\"\n    }\n  ],\n  \"formaPagamento\": \"PIX\",\n  \"nomeContato\": \"João Silva\",\n  \"telefoneContato\": \"(11) 99999-9999\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/pedidos",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "pedidos"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cenários de Erro - Validação",
+			"item": [
+				{
+					"name": "1. Restaurante com Nome Vazio → 400",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response has error structure\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success', false);",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"    pm.expect(jsonData).to.have.property('timestamp');",
+									"});",
+									"",
+									"pm.test(\"Error message contains validation info\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error.message).to.include('inválidos');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nome\": \"\",\n  \"categoria\": \"PIZZARIA\",\n  \"endereco\": \"Rua das Pizzas, 456 - Centro - São Paulo/SP\",\n  \"telefone\": \"(11) 99999-9999\",\n  \"taxaEntrega\": 5.50,\n  \"tempoEntrega\": 45\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/restaurantes",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "restaurantes"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. Produto com Preço Negativo → 400",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Error contains price validation\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error.details).to.have.property('preco');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nome\": \"Pizza Margherita\",\n  \"descricao\": \"Deliciosa pizza com molho de tomate\",\n  \"preco\": -10.00,\n  \"categoria\": \"Pizza\",\n  \"restauranteId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/produtos",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "produtos"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. Buscar Restaurante Inexistente → 404",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Error code is ENTITY_NOT_FOUND\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error.code).to.eql('ENTITY_NOT_FOUND');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/restaurantes/999",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "restaurantes", "999"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4. Pedido sem Itens → 400",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Error contains items validation\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error.details).to.have.property('itens');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"clienteId\": 1,\n  \"restauranteId\": 1,\n  \"enderecoEntrega\": \"Rua das Flores, 123, Apto 45 - Jardim Paulista\",\n  \"cepEntrega\": \"01234-567\",\n  \"itens\": []\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/pedidos",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "pedidos"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "5. Restaurante com Telefone Inválido → 400",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Error contains phone validation\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error.details).to.have.property('telefone');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nome\": \"Pizzaria do João\",\n  \"categoria\": \"PIZZARIA\",\n  \"endereco\": \"Rua das Pizzas, 456 - Centro - São Paulo/SP\",\n  \"telefone\": \"123\",\n  \"taxaEntrega\": 5.50,\n  \"tempoEntrega\": 45\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/restaurantes",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "restaurantes"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cenários de Erro - Validações Customizadas",
+			"item": [
+				{
+					"name": "CEP Inválido → 400",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Error contains CEP validation\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error.details).to.have.property('cepEntrega');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"clienteId\": 1,\n  \"restauranteId\": 1,\n  \"enderecoEntrega\": \"Rua das Flores, 123\",\n  \"cepEntrega\": \"123\",\n  \"itens\": [\n    {\n      \"produtoId\": 1,\n      \"quantidade\": 1\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/pedidos",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "pedidos"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Categoria Inválida → 400",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Error contains category validation\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error.details).to.have.property('categoria');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nome\": \"Restaurante Teste\",\n  \"categoria\": \"CATEGORIA_INEXISTENTE\",\n  \"endereco\": \"Rua das Pizzas, 456 - Centro - São Paulo/SP\",\n  \"telefone\": \"(11) 99999-9999\",\n  \"taxaEntrega\": 5.50,\n  \"tempoEntrega\": 45\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/restaurantes",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "restaurantes"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Horário de Funcionamento Inválido → 400",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Error contains schedule validation\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error.details).to.have.property('horarioFuncionamento');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nome\": \"Restaurante Teste\",\n  \"categoria\": \"PIZZARIA\",\n  \"endereco\": \"Rua das Pizzas, 456 - Centro - São Paulo/SP\",\n  \"telefone\": \"(11) 99999-9999\",\n  \"taxaEntrega\": 5.50,\n  \"tempoEntrega\": 45,\n  \"horarioFuncionamento\": \"25:00-26:00\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/restaurantes",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "restaurantes"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cenários de Erro - Limites e Ranges",
+			"item": [
+				{
+					"name": "Produto com Preço Acima do Limite → 400",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Error contains price limit validation\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error.details).to.have.property('preco');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nome\": \"Produto Caro\",\n  \"descricao\": \"Produto muito caro para teste\",\n  \"preco\": 600.00,\n  \"categoria\": \"Especial\",\n  \"restauranteId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/produtos",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "produtos"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Restaurante com Tempo de Entrega Inválido → 400",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Error contains delivery time validation\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error.details).to.have.property('tempoEntrega');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nome\": \"Restaurante Teste\",\n  \"categoria\": \"PIZZARIA\",\n  \"endereco\": \"Rua das Pizzas, 456 - Centro - São Paulo/SP\",\n  \"telefone\": \"(11) 99999-9999\",\n  \"taxaEntrega\": 5.50,\n  \"tempoEntrega\": 5\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/restaurantes",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "restaurantes"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Produto com Descrição Muito Curta → 400",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Error contains description validation\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error.details).to.have.property('descricao');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nome\": \"Pizza\",\n  \"descricao\": \"Pizza\",\n  \"preco\": 25.90,\n  \"categoria\": \"Pizza\",\n  \"restauranteId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/produtos",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "produtos"]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}

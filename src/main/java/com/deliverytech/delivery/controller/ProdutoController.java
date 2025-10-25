@@ -17,24 +17,22 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/produtos")
-@Tag(name = "Produtos", description = "Operações relacionadas aos produtos dos restaurantes")
+@Tag(name = "Produtos", description = "Operações relacionadas aos produtos")
 public class ProdutoController {
     
     @Autowired
     private ProdutoService produtoService;
     
     @PostMapping
-    @Operation(summary = "Cadastrar produto", description = "Cria um novo produto para um restaurante")
+    @Operation(summary = "Cadastrar produto", description = "Cria um novo produto no sistema")
     @ApiResponses({
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "Produto criado com sucesso"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Dados inválidos"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Restaurante não encontrado")
     })
     public ResponseEntity<ApiResponse<ProdutoResponseDTO>> criar(
-            @Valid @RequestBody @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                description = "Dados do produto a ser criado", required = true
-            ) ProdutoDTO produtoDTO) {
-        ProdutoResponseDTO response = produtoService.cadastrarProduto(produtoDTO);
+            @Valid @RequestBody @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Dados do produto a ser criado", required = true) ProdutoDTO produtoDTO) {
+        ProdutoResponseDTO response = produtoService.criar(produtoDTO);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(response, "Produto criado com sucesso"));
     }
@@ -46,9 +44,8 @@ public class ProdutoController {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Produto não encontrado")
     })
     public ResponseEntity<ApiResponse<ProdutoResponseDTO>> buscarPorId(
-            @Parameter(description = "ID do produto", required = true)
-            @PathVariable Long id) {
-        ProdutoResponseDTO produto = produtoService.buscarProdutoPorId(id);
+            @Parameter(description = "ID do produto", required = true) @PathVariable Long id) {
+        ProdutoResponseDTO produto = produtoService.buscarPorIdResponse(id);
         return ResponseEntity.ok(ApiResponse.success(produto));
     }
     
@@ -60,56 +57,47 @@ public class ProdutoController {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Produto não encontrado")
     })
     public ResponseEntity<ApiResponse<ProdutoResponseDTO>> atualizar(
-            @Parameter(description = "ID do produto", required = true)
-            @PathVariable Long id,
-            @Valid @RequestBody @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                description = "Dados atualizados do produto", required = true
-            ) ProdutoDTO produtoDTO) {
-        ProdutoResponseDTO response = produtoService.atualizarProduto(id, produtoDTO);
+            @Parameter(description = "ID do produto", required = true) @PathVariable Long id,
+            @Valid @RequestBody @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Dados atualizados do produto", required = true) ProdutoDTO produtoDTO) {
+        ProdutoResponseDTO response = produtoService.atualizar(id, produtoDTO);
         return ResponseEntity.ok(ApiResponse.success(response, "Produto atualizado com sucesso"));
     }
     
     @DeleteMapping("/{id}")
-    @Operation(summary = "Remover produto", description = "Remove um produto do sistema (soft delete - marca como indisponível)")
+    @Operation(summary = "Remover produto", description = "Remove um produto do sistema")
     @ApiResponses({
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Produto removido com sucesso"),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Produto não encontrado")
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "204", description = "Produto removido com sucesso"),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Produto não encontrado"),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "409", description = "Produto não pode ser removido (possui pedidos)")
     })
-    public ResponseEntity<ApiResponse<ProdutoResponseDTO>> remover(
-            @Parameter(description = "ID do produto", required = true)
-            @PathVariable Long id) {
-        ProdutoResponseDTO response = produtoService.alterarDisponibilidade(id, false);
-        return ResponseEntity.ok(ApiResponse.success(response, "Produto removido com sucesso"));
+    public ResponseEntity<Void> remover(
+            @Parameter(description = "ID do produto", required = true) @PathVariable Long id) {
+        produtoService.remover(id);
+        return ResponseEntity.noContent().build();
     }
     
     @PatchMapping("/{id}/disponibilidade")
-    @Operation(summary = "Alterar disponibilidade", description = "Alterna a disponibilidade de um produto")
+    @Operation(summary = "Alterar disponibilidade", description = "Altera a disponibilidade de um produto")
     @ApiResponses({
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Disponibilidade alterada com sucesso"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Produto não encontrado")
     })
     public ResponseEntity<ApiResponse<ProdutoResponseDTO>> alterarDisponibilidade(
-            @Parameter(description = "ID do produto", required = true)
-            @PathVariable Long id) {
-        // Buscar produto atual para alternar disponibilidade
-        ProdutoResponseDTO produtoAtual = produtoService.buscarProdutoPorId(id);
-        boolean novaDisponibilidade = !produtoAtual.getDisponivel();
-        
-        ProdutoResponseDTO response = produtoService.alterarDisponibilidade(id, novaDisponibilidade);
-        String mensagem = novaDisponibilidade ? "Produto disponibilizado" : "Produto indisponibilizado";
-        return ResponseEntity.ok(ApiResponse.success(response, mensagem));
+            @Parameter(description = "ID do produto", required = true) @PathVariable Long id) {
+        ProdutoResponseDTO response = produtoService.alterarDisponibilidade(id);
+        return ResponseEntity.ok(ApiResponse.success(response, "Disponibilidade alterada com sucesso"));
     }
     
     @GetMapping("/restaurante/{restauranteId}")
-    @Operation(summary = "Listar produtos do restaurante", description = "Lista todos os produtos disponíveis de um restaurante")
+    @Operation(summary = "Listar produtos do restaurante", description = "Lista todos os produtos de um restaurante específico")
     @ApiResponses({
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Lista de produtos do restaurante"),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Lista de produtos retornada"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Restaurante não encontrado")
     })
     public ResponseEntity<ApiResponse<List<ProdutoResponseDTO>>> listarPorRestaurante(
-            @Parameter(description = "ID do restaurante", required = true)
-            @PathVariable Long restauranteId) {
-        List<ProdutoResponseDTO> produtos = produtoService.buscarProdutosPorRestaurante(restauranteId);
+            @Parameter(description = "ID do restaurante", required = true) @PathVariable Long restauranteId,
+            @Parameter(description = "Filtrar apenas produtos disponíveis") @RequestParam(required = false) Boolean disponivel) {
+        List<ProdutoResponseDTO> produtos = produtoService.listarPorRestaurante(restauranteId, disponivel);
         return ResponseEntity.ok(ApiResponse.success(produtos));
     }
     
@@ -120,23 +108,20 @@ public class ProdutoController {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Categoria inválida")
     })
     public ResponseEntity<ApiResponse<List<ProdutoResponseDTO>>> buscarPorCategoria(
-            @Parameter(description = "Nome da categoria", required = true)
-            @PathVariable String categoria) {
-        List<ProdutoResponseDTO> produtos = produtoService.buscarProdutosPorCategoria(categoria);
+            @Parameter(description = "Nome da categoria", required = true) @PathVariable String categoria) {
+        List<ProdutoResponseDTO> produtos = produtoService.buscarPorCategoria(categoria);
         return ResponseEntity.ok(ApiResponse.success(produtos));
     }
     
     @GetMapping("/buscar")
-    @Operation(summary = "Buscar produtos por nome", description = "Busca produtos que contenham o nome informado")
+    @Operation(summary = "Buscar por nome", description = "Busca produtos que contenham o nome informado")
     @ApiResponses({
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Lista de produtos encontrados"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Nome inválido")
     })
     public ResponseEntity<ApiResponse<List<ProdutoResponseDTO>>> buscarPorNome(
-            @Parameter(description = "Nome ou parte do nome do produto", required = true)
-            @RequestParam String nome) {
-        // Implementar busca por nome no service
-        List<ProdutoResponseDTO> produtos = produtoService.buscarProdutosPorNome(nome);
+            @Parameter(description = "Nome ou parte do nome do produto", required = true) @RequestParam String nome) {
+        List<ProdutoResponseDTO> produtos = produtoService.buscarPorNome(nome);
         return ResponseEntity.ok(ApiResponse.success(produtos));
     }
 }

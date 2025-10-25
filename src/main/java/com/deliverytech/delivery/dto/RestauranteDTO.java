@@ -1,5 +1,8 @@
 package com.deliverytech.delivery.dto;
 
+import com.deliverytech.delivery.validation.ValidCategoria;
+import com.deliverytech.delivery.validation.ValidTelefone;
+import com.deliverytech.delivery.validation.ValidHorarioFuncionamento;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
@@ -13,11 +16,8 @@ public class RestauranteDTO {
     private String nome;
 
     @NotBlank(message = "Categoria é obrigatória")
-    @Size(min = 2, max = 50, message = "Categoria deve ter entre 2 e 50 caracteres")
-    @Schema(description = "Categoria do restaurante", example = "Pizzaria", required = true, 
-            allowableValues = {"Pizzaria", "Hamburgueria", "Japonesa", "Italiana", "Brasileira", 
-                              "Mexicana", "Chinesa", "Árabe", "Vegetariana", "Doces & Sobremesas", 
-                              "Lanches", "Saudável"})
+    @ValidCategoria(message = "Categoria deve ser uma das opções válidas")
+    @Schema(description = "Categoria do restaurante", example = "PIZZARIA", required = true)
     private String categoria;
 
     @NotBlank(message = "Endereço é obrigatório")
@@ -26,12 +26,27 @@ public class RestauranteDTO {
             example = "Rua das Pizzas, 456 - Centro - São Paulo/SP - CEP: 01234-567")
     private String endereco;
 
+    @NotBlank(message = "Telefone é obrigatório")
+    @ValidTelefone(message = "Telefone deve estar no formato válido brasileiro (10-11 dígitos)")
+    @Schema(description = "Telefone do restaurante", example = "(11) 99999-9999", required = true)
+    private String telefone;
+
     @NotNull(message = "Taxa de entrega é obrigatória")
     @DecimalMin(value = "0.0", inclusive = true, message = "Taxa de entrega deve ser maior ou igual a zero")
     @DecimalMax(value = "999.99", message = "Taxa de entrega deve ser menor que R$ 1000,00")
     @Digits(integer = 3, fraction = 2, message = "Taxa de entrega deve ter no máximo 3 dígitos inteiros e 2 decimais")
     @Schema(description = "Taxa de entrega do restaurante em reais", example = "5.50", required = true)
     private BigDecimal taxaEntrega;
+
+    @NotNull(message = "Tempo de entrega é obrigatório")
+    @Min(value = 10, message = "Tempo de entrega deve ser no mínimo 10 minutos")
+    @Max(value = 120, message = "Tempo de entrega deve ser no máximo 120 minutos")
+    @Schema(description = "Tempo estimado de entrega em minutos", example = "45", required = true)
+    private Integer tempoEntrega;
+
+    @ValidHorarioFuncionamento(message = "Horário de funcionamento deve estar no formato HH:MM-HH:MM")
+    @Schema(description = "Horário de funcionamento", example = "08:00-22:00")
+    private String horarioFuncionamento;
 
     @DecimalMin(value = "1.0", message = "Avaliação deve ser entre 1.0 e 5.0")
     @DecimalMax(value = "5.0", message = "Avaliação deve ser entre 1.0 e 5.0")
@@ -43,20 +58,15 @@ public class RestauranteDTO {
     // Constructors
     public RestauranteDTO() {}
 
-    public RestauranteDTO(String nome, String categoria, String endereco, BigDecimal taxaEntrega) {
+    public RestauranteDTO(String nome, String categoria, String endereco, String telefone, 
+                         BigDecimal taxaEntrega, Integer tempoEntrega) {
         this.nome = nome;
         this.categoria = categoria;
         this.endereco = endereco;
+        this.telefone = telefone;
         this.taxaEntrega = taxaEntrega;
+        this.tempoEntrega = tempoEntrega;
         this.avaliacao = 5.0; // Valor padrão para novos restaurantes
-    }
-
-    public RestauranteDTO(String nome, String categoria, String endereco, BigDecimal taxaEntrega, Double avaliacao) {
-        this.nome = nome;
-        this.categoria = categoria;
-        this.endereco = endereco;
-        this.taxaEntrega = taxaEntrega;
-        this.avaliacao = avaliacao != null ? avaliacao : 5.0;
     }
 
     // Getters and Setters
@@ -98,6 +108,30 @@ public class RestauranteDTO {
 
     public void setAvaliacao(Double avaliacao) {
         this.avaliacao = avaliacao;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
+
+    public Integer getTempoEntrega() {
+        return tempoEntrega;
+    }
+
+    public void setTempoEntrega(Integer tempoEntrega) {
+        this.tempoEntrega = tempoEntrega;
+    }
+
+    public String getHorarioFuncionamento() {
+        return horarioFuncionamento;
+    }
+
+    public void setHorarioFuncionamento(String horarioFuncionamento) {
+        this.horarioFuncionamento = horarioFuncionamento;
     }
 
     // Métodos utilitários para compatibilidade com frontend

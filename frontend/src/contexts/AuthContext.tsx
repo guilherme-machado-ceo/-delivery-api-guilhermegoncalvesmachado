@@ -1,16 +1,27 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
+// Tipos alinhados com o backend
 interface User {
   id: number;
-  username: string;
+  nome: string;
+  email: string;
   roles: string[];
+  restauranteId?: number;
+}
+
+interface LoginResponse {
+  token: string;
+  type: string;
+  expiresIn: number;
+  user: User;
 }
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (username: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -35,54 +46,42 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // API Base URL
   const API_BASE_URL = 'http://localhost:9090/api';
 
   useEffect(() => {
-    // Verificar se há token salvo no localStorage
     const savedToken = localStorage.getItem('authToken');
     const savedUser = localStorage.getItem('authUser');
     
     if (savedToken && savedUser) {
       setToken(savedToken);
       setUser(JSON.parse(savedUser));
-      // Configurar axios com o token
       axios.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`;
     }
     
     setIsLoading(false);
   }, []);
 
-  const login = async (username: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string): Promise<boolean> => {
     try {
       setIsLoading(true);
       
-      const response = await axios.post(`${API_BASE_URL}/auth/login`, {
-        username,
-        password
-      });
+      const response = await toast.promise(
+        axios.post<LoginResponse>(`${API_BASE_URL}/auth/login`, { email, password }),
+        {
+          loading: 'Autenticando...',
+          success: 'Login realizado com sucesso!',
+          error: 'Credenciais inválidas. Tente novamente.',
+        }
+      );
 
-      const { accessToken, username: userUsername, roles } = response.data;
-      
-      // Buscar informações completas do usuário
-      const userInfoResponse = await axios.get(`${API_BASE_URL}/auth/me`, {
-        headers: { Authorization: `Bearer ${accessToken}` }
-      });
+      const { token: authToken, user: userData } = response.data;
 
-      const userData: User = {
-        id: userInfoResponse.data.id,
-        username: userUsername,
-        roles: roles
-      };
-
-      // Salvar no estado e localStorage
-      setToken(accessToken);
+      setToken(authToken);
       setUser(userData);
-      localStorage.setItem('authToken', accessToken);
+      localStorage.setItem('authToken', authToken);
       localStorage.setItem('authUser', JSON.stringify(userData));
       
-      // Configurar axios para futuras requisições
-      axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+      axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
       
       return true;
     } catch (error) {
@@ -99,6 +98,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('authUser');
     delete axios.defaults.headers.common['Authorization'];
+    toast.success('Logout realizado com sucesso!');
   };
 
   const value: AuthContextType = {

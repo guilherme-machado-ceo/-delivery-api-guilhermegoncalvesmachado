@@ -16,9 +16,21 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+import com.deliverytech.delivery.util.SecurityUtils;
+
+@Service("produtoService")
 @Transactional
 public class ProdutoService implements ProdutoServiceInterface {
+
+    public boolean isOwner(Long produtoId) {
+        if (produtoId == null) {
+            return false;
+        }
+        Long currentRestauranteId = SecurityUtils.getCurrentUser().getRestauranteId();
+        return produtoRepository.findById(produtoId)
+                .map(produto -> produto.getRestaurante().getId().equals(currentRestauranteId))
+                .orElse(false);
+    }
     
     @Autowired
     private ProdutoRepository produtoRepository;

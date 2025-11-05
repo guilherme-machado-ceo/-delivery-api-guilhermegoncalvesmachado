@@ -16,12 +16,19 @@
 
 
 - [ ] 2. Implementar testes unitários para ClienteService
-  - [ ] 2.1 Criar estrutura base do ClienteServiceTest
+  - [x] 2.1 Criar estrutura base do ClienteServiceTest
+
+
+
+
     - Configurar anotações @ExtendWith(MockitoExtension.class)
     - Configurar mocks para ClienteRepository e ModelMapper
 
     - Implementar métodos de setup e teardown
     - _Requirements: 1.1, 1.2_
+
+
+
 
   - [ ] 2.2 Implementar testes de cenários positivos do ClienteService
     - Testar método salvarCliente() com dados válidos
@@ -29,6 +36,8 @@
 
     - Testar listagem de clientes ativos
     - Testar atualização de cliente com dados válidos
+
+
     - _Requirements: 1.1, 1.2_
 
   - [ ] 2.3 Implementar testes de cenários negativos do ClienteService
@@ -49,10 +58,14 @@
     - _Requirements: 3.2_
 
 
+
+
 - [ ] 3. Implementar testes unitários para PedidoService
   - [ ] 3.1 Criar estrutura base do PedidoServiceTest
     - Configurar anotações @ExtendWith(MockitoExtension.class)
     - Configurar mocks para repositories e services dependentes
+
+
     - Implementar métodos de setup com dados de teste
     - _Requirements: 1.1, 1.3_
 
@@ -62,6 +75,8 @@
 
     - Testar cálculo correto do valor total
     - Testar aplicação de taxa de entrega
+
+
     - Testar criação de itens do pedido
 
 
@@ -69,6 +84,8 @@
 
   - [ ] 3.3 Implementar testes de validação de negócio do PedidoService
     - Testar validação de estoque insuficiente
+
+
 
     - Testar validação de produtos inexistentes
     - Testar validação de restaurante inativo
@@ -87,6 +104,9 @@
 
   - [x]* 3.5 Implementar testes de cobertura adicional para PedidoService
 
+
+
+
     - Testar métodos de busca e listagem
     - Testar cenários de autorização e segurança
     - Atingir meta de 80% de cobertura
@@ -96,11 +116,15 @@
 
   - [ ] 4.1 Configurar ambiente de teste de integração para ClienteController
     - Configurar @SpringBootTest e @AutoConfigureTestDatabase
+
+
     - Configurar @TestPropertySource para application-test.properties
     - Implementar @DirtiesContext para isolamento entre testes
 
     - Configurar TestRestTemplate ou MockMvc
     - _Requirements: 2.1, 2.2_
+
+
 
 
 
@@ -110,6 +134,8 @@
     - Testar GET /api/clientes/{id} existente (status 200)
     - Testar GET /api/clientes/{id} inexistente (status 404)
     - _Requirements: 2.1, 2.2_
+
+
 
 
 
@@ -146,6 +172,7 @@
   - [x] 5.2 Implementar testes de criação de pedidos completos
 
 
+
     - Testar POST /api/pedidos com pedido válido completo
     - Testar validação de produtos inexistentes
     - Testar validação de estoque insuficiente
@@ -161,6 +188,8 @@
     - Testar GET /api/pedidos/{id} para detalhes do pedido
     - Testar filtros de status e data
     - Validar paginação de resultados
+
+
     - _Requirements: 2.1, 2.3_
 
   - [ ] 5.4 Implementar testes de atualização de status e cenários de erro
@@ -186,14 +215,18 @@
   - [ ] 6.2 Implementar automação de execução e relatórios
     - Configurar execução automática via Maven
     - Configurar falha de build se cobertura < 80%
+
+
     - Criar comandos para execução de testes específicos
     - Documentar comandos Maven para execução local
     - _Requirements: 3.1, 3.3, 4.2_
+
 
   - [ ] 6.3 Gerar e validar relatórios de cobertura
     - Executar mvn clean test jacoco:report
     - Analisar relatório HTML gerado
     - Identificar áreas com baixa cobertura
+
 
 
     - Documentar métricas de qualidade obtidas
@@ -209,11 +242,16 @@
     - Criar ClienteTestData com builders para cenários de teste
     - Criar PedidoTestData com dados válidos e inválidos
     - Criar ProdutoTestData para testes de integração
+
+
     - Implementar RestauranteTestData para cenários completos
     - _Requirements: 2.1, 2.2, 2.3_
 
   - [ ] 7.2 Configurar perfis e propriedades de teste
     - Finalizar application-test.properties com todas as configurações
+
+
+
     - Configurar logging específico para testes
     - Configurar desabilitação de cache durante testes
     - Implementar @TestConfiguration para beans específicos

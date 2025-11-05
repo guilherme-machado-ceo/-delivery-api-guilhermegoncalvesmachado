@@ -7,12 +7,12 @@ import com.deliverytech.delivery.dto.ErrorResponse;
 import com.deliverytech.delivery.model.Cliente;
 import com.deliverytech.delivery.repository.ClienteRepository;
 import com.deliverytech.delivery.util.ClienteTestData;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
+
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.*;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.List;
 
@@ -46,8 +46,7 @@ class ClienteControllerIT {
     @Autowired
     private ClienteRepository clienteRepository;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+
 
     private String baseUrl;
     private HttpHeaders headers;
@@ -275,7 +274,7 @@ class ClienteControllerIT {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getType()).contains("validation");
+        assertThat(response.getBody().getError().getCode()).contains("VALIDATION");
 
         // Verificar que dados originais não foram alterados
         Cliente clienteOriginal = clienteRepository.findById(clienteSalvo.getId()).orElse(null);
@@ -301,7 +300,7 @@ class ClienteControllerIT {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getDetail()).contains("Cliente");
+        assertThat(response.getBody().getError().getDetails()).contains("Cliente");
     }
 
     @Test
@@ -330,7 +329,7 @@ class ClienteControllerIT {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getDetail()).contains("email");
+        assertThat(response.getBody().getError().getDetails()).contains("email");
     }
 
     // ========== TESTES DE ATIVAR/DESATIVAR (PATCH) ==========

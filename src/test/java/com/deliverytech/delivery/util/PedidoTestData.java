@@ -88,12 +88,10 @@ public class PedidoTestData {
         dto.setId(1L);
         dto.setCliente(ClienteTestData.createValidClienteResponseDTO());
         dto.setRestaurante(createValidRestauranteResponseDTO());
-        dto.setEnderecoEntrega("Rua das Flores, 123 - São Paulo/SP");
-        dto.setCepEntrega("01234567");
+        dto.setEnderecoCoberto("Rua das Flores, 123 - São Paulo/SP");
         dto.setStatus(StatusPedido.PENDENTE);
         dto.setDataPedido(LocalDateTime.now());
-        dto.setTaxaEntrega(new BigDecimal("5.00"));
-        dto.setTotal(new BigDecimal("30.90"));
+        dto.setValorTotal(new BigDecimal("30.90"));
         dto.setItens(Arrays.asList(createValidItemPedidoResponseDTO()));
         return dto;
     }
@@ -104,7 +102,7 @@ public class PedidoTestData {
         item.setProduto(createValidProdutoResponseDTO());
         item.setQuantidade(2);
         item.setPrecoUnitario(new BigDecimal("12.95"));
-        item.setSubtotal(new BigDecimal("25.90"));
+        item.setPrecoTotal(new BigDecimal("25.90"));
         item.setObservacao("Sem cebola");
         return item;
     }
@@ -116,7 +114,7 @@ public class PedidoTestData {
         produto.setDescricao("Deliciosa pizza com molho de tomate e mussarela");
         produto.setPreco(new BigDecimal("12.95"));
         produto.setCategoria("Pizza");
-        produto.setRestauranteId(1L);
+        produto.setRestaurante(createValidRestauranteResponseDTO());
         produto.setDisponivel(true);
         return produto;
     }
@@ -129,7 +127,9 @@ public class PedidoTestData {
 
     public static ProdutoResponseDTO createProdutoResponseDTOWithRestaurante(Long restauranteId) {
         ProdutoResponseDTO produto = createValidProdutoResponseDTO();
-        produto.setRestauranteId(restauranteId);
+        RestauranteResponseDTO restaurante = createValidRestauranteResponseDTO();
+        restaurante.setId(restauranteId);
+        produto.setRestaurante(restaurante);
         return produto;
     }
 
@@ -143,9 +143,10 @@ public class PedidoTestData {
         Restaurante restaurante = new Restaurante();
         restaurante.setId(1L);
         restaurante.setNome("Pizzaria do João");
-        restaurante.setEndereco("Rua A, 100");
-        restaurante.setCep("01234567");
-        restaurante.setTelefone("11999999999");
+        restaurante.setCategoria("Pizzaria");
+        restaurante.setEndereco("Rua A, 100 - Centro - São Paulo/SP");
+        restaurante.setTaxaEntrega(new BigDecimal("5.00"));
+        restaurante.setAvaliacao(4.5);
         restaurante.setAtivo(true);
         return restaurante;
     }
@@ -154,9 +155,10 @@ public class PedidoTestData {
         RestauranteResponseDTO restaurante = new RestauranteResponseDTO();
         restaurante.setId(1L);
         restaurante.setNome("Pizzaria do João");
-        restaurante.setEndereco("Rua A, 100");
-        restaurante.setCep("01234567");
-        restaurante.setTelefone("11999999999");
+        restaurante.setCategoria("Pizzaria");
+        restaurante.setEndereco("Rua A, 100 - Centro - São Paulo/SP - CEP: 01234-567");
+        restaurante.setTaxaEntrega(new BigDecimal("5.00"));
+        restaurante.setAvaliacao(4.5);
         restaurante.setAtivo(true);
         return restaurante;
     }
@@ -170,11 +172,11 @@ public class PedidoTestData {
     public static PedidoResumoDTO createValidPedidoResumoDTO() {
         PedidoResumoDTO resumo = new PedidoResumoDTO();
         resumo.setId(1L);
-        resumo.setClienteNome("João Silva");
-        resumo.setRestauranteNome("Pizzaria do João");
+        resumo.setNomeCliente("João Silva");
+        resumo.setNomeRestaurante("Pizzaria do João");
         resumo.setStatus(StatusPedido.PENDENTE);
         resumo.setDataPedido(LocalDateTime.now());
-        resumo.setTotal(new BigDecimal("30.90"));
+        resumo.setValorTotal(new BigDecimal("30.90"));
         resumo.setQuantidadeItens(2);
         return resumo;
     }

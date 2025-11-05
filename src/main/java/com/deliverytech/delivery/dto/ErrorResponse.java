@@ -3,6 +3,7 @@ package com.deliverytech.delivery.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Schema(description = "Resposta de erro da API")
 public class ErrorResponse {
@@ -57,5 +58,86 @@ public class ErrorResponse {
     
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
+    }
+    
+    // Métodos de conveniência para compatibilidade com testes
+    public String getType() {
+        return error != null ? error.getCode() : null;
+    }
+    
+    public String getDetail() {
+        return error != null ? error.getDetails() : null;
+    }
+    
+    public List<String> getErrors() {
+        return error != null ? error.getFieldErrors() : null;
+    }
+    
+    @Schema(description = "Detalhes específicos do erro")
+    public static class ErrorDetails {
+        
+        @Schema(description = "Código do erro", example = "VALIDATION_ERROR")
+        private String code;
+        
+        @Schema(description = "Mensagem do erro", example = "Dados inválidos")
+        private String message;
+        
+        @Schema(description = "Detalhes adicionais", example = "Email já existe")
+        private String details;
+        
+        @Schema(description = "Lista de erros de campo")
+        private List<String> fieldErrors;
+        
+        public ErrorDetails() {}
+        
+        public ErrorDetails(String code, String message) {
+            this.code = code;
+            this.message = message;
+        }
+        
+        public ErrorDetails(String code, String message, String details) {
+            this.code = code;
+            this.message = message;
+            this.details = details;
+        }
+        
+        public ErrorDetails(String code, String message, List<String> fieldErrors) {
+            this.code = code;
+            this.message = message;
+            this.fieldErrors = fieldErrors;
+        }
+        
+        // Getters and Setters
+        public String getCode() {
+            return code;
+        }
+        
+        public void setCode(String code) {
+            this.code = code;
+        }
+        
+        public String getMessage() {
+            return message;
+        }
+        
+        public void setMessage(String message) {
+            this.message = message;
+        }
+        
+        public String getDetails() {
+            return details;
+        }
+        
+        public void setDetails(String details) {
+            this.details = details;
+        }
+        
+        public List<String> getFieldErrors() {
+            return fieldErrors;
+        }
+        
+        public void setFieldErrors(List<String> fieldErrors) {
+            this.fieldErrors = fieldErrors;
+        }
     }
 }

@@ -1,309 +1,288 @@
-# Guia de Execução de Testes - DeliveryTech API
+# 🧪 Guia de Execução de Testes - DeliveryTech API
 
-## 📋 Visão Geral
+Este documento fornece instruções completas para executar os testes unitários e de integração da API DeliveryTech.
 
-Este documento fornece instruções completas para executar os testes unitários e de integração da API DeliveryTech, incluindo análise de cobertura de código e geração de relatórios.
+## 📋 **Índice**
 
-## 🏗️ Estrutura de Testes
+- [Pré-requisitos](#pré-requisitos)
+- [Estrutura de Testes](#estrutura-de-testes)
+- [Comandos de Execução](#comandos-de-execução)
+- [Relatórios de Cobertura](#relatórios-de-cobertura)
+- [Estratégia de Testes](#estratégia-de-testes)
+- [Troubleshooting](#troubleshooting)
 
-### Tipos de Teste Implementados
+## 🔧 **Pré-requisitos**
 
-- **Testes Unitários**: Isolam a lógica de negócio usando mocks
-- **Testes de Integração**: Validam comportamento end-to-end da API
-- **Cobertura de Código**: Análise com JaCoCo (meta: 80% nos serviços)
+- **Java 21** ou superior
+- **Maven 3.8+**
+- **Git** para versionamento
 
-### Estrutura de Diretórios
+## 📁 **Estrutura de Testes**
 
 ```
-src/test/
-├── java/com/deliverytech/delivery/
-│   ├── service/                    # Testes unitários dos serviços
-│   │   ├── ClienteServiceTest.java
-│   │   └── PedidoServiceTest.java
-│   ├── controller/                 # Testes de integração dos controladores
-│   │   ├── ClienteControllerIT.java
-│   │   └── PedidoControllerIT.java
-│   ├── util/                       # Utilitários e dados de teste
-│   │   ├── ClienteTestData.java
-│   │   └── PedidoTestData.java
-│   └── config/                     # Configurações específicas de teste
-│       └── TestConfig.java
+src/test/java/
+├── com/deliverytech/delivery/
+│   ├── config/
+│   │   └── TestConfig.java                    # Configurações específicas de teste
+│   ├── controller/
+│   │   ├── ClienteControllerIT.java           # Testes de integração - Cliente
+│   │   └── PedidoControllerIT.java            # Testes de integração - Pedido
+│   ├── service/
+│   │   ├── ClienteServiceTest.java            # Testes unitários - ClienteService
+│   │   └── PedidoServiceTest.java             # Testes unitários - PedidoService
+│   └── util/
+│       ├── ClienteTestData.java               # Dados de teste - Cliente
+│       ├── PedidoTestData.java                # Dados de teste - Pedido
+│       ├── ProdutoTestData.java               # Dados de teste - Produto
+│       └── RestauranteTestData.java           # Dados de teste - Restaurante
 └── resources/
-    ├── application-test.properties  # Configurações de teste
-    ├── logback-test.xml            # Configuração de logging
-    └── test-data/                  # Scripts SQL e dados de teste
-        ├── test-schema.sql
-        └── cleanup.sql
+    ├── application-test.properties            # Configurações de teste
+    └── test-data/
+        └── test-schema.sql                    # Schema para testes
 ```
 
-## 🚀 Comandos de Execução
+## ⚡ **Comandos de Execução**
 
-### Executar Todos os Testes
-
+### **Executar Todos os Testes**
 ```bash
-# Executar todos os testes com relatório de cobertura
+mvn test
+```
+
+### **Executar Testes com Relatório de Cobertura**
+```bash
 mvn clean test jacoco:report
-
-# Executar apenas testes unitários
-mvn test -Dtest="**/*Test"
-
-# Executar apenas testes de integração
-mvn test -Dtest="**/*IT"
 ```
 
-### Executar Testes Específicos
+### **Executar Testes Específicos**
 
+#### Testes Unitários Apenas
 ```bash
-# Executar testes de um serviço específico
+mvn test -Dtest="*Test"
+```
+
+#### Testes de Integração Apenas
+```bash
+mvn test -Dtest="*IT"
+```
+
+#### Teste Específico por Classe
+```bash
 mvn test -Dtest=ClienteServiceTest
-
-# Executar testes de um controlador específico
+mvn test -Dtest=PedidoServiceTest
 mvn test -Dtest=ClienteControllerIT
-
-# Executar método específico
-mvn test -Dtest=ClienteServiceTest#should_SaveCliente_When_ValidDataProvided
 ```
 
-### Executar com Perfil de Teste
-
+#### Teste Específico por Método
 ```bash
-# Forçar uso do perfil de teste
-mvn test -Dspring.profiles.active=test
+mvn test -Dtest=ClienteServiceTest#should_SaveCliente_When_ValidDataProvided
+mvn test -Dtest=PedidoServiceTest#should_CreatePedido_When_ValidProductsProvided
+```
 
-# Executar com logging detalhado
+### **Executar com Perfil de Teste Específico**
+```bash
+mvn test -Dspring.profiles.active=test
+```
+
+### **Executar com Logs Detalhados**
+```bash
 mvn test -Dlogging.level.com.deliverytech=DEBUG
 ```
 
-### Verificar Cobertura de Código
-
+### **Verificar Cobertura Mínima**
 ```bash
-# Executar testes e verificar se cobertura atende critério (80%)
 mvn clean test jacoco:check
-
-# Gerar apenas relatório de cobertura (após executar testes)
-mvn jacoco:report
 ```
 
-## 📊 Relatórios de Cobertura
+## 📊 **Relatórios de Cobertura**
 
-### Localização dos Relatórios
-
-Após executar `mvn clean test jacoco:report`, os relatórios são gerados em:
-
-```
-target/site/jacoco/
-├── index.html              # Relatório principal
-├── jacoco.xml              # Dados XML para CI/CD
-└── jacoco.csv              # Dados CSV para análise
-```
-
-### Visualizar Relatórios
-
-1. **Relatório HTML**: Abra `target/site/jacoco/index.html` no navegador
-2. **Métricas por Classe**: Navegue pelas packages para ver detalhes
-3. **Linhas Não Cobertas**: Código destacado em vermelho
-
-### Metas de Cobertura
-
-- **Serviços**: Mínimo 80% de cobertura de linha
-- **Controladores**: Mínimo 70% de cobertura de linha
-- **DTOs**: Mínimo 60% de cobertura de linha
-- **Classes Excluídas**: Configurações, Application main, Models
-
-## 🔧 Configuração do Ambiente
-
-### Dependências Necessárias
-
-As seguintes dependências já estão configuradas no `pom.xml`:
-
-- JUnit 5 (jupiter)
-- Mockito Core e JUnit Jupiter
-- Spring Boot Test
-- AssertJ (assertions fluentes)
-- TestContainers (opcional)
-- JaCoCo Maven Plugin
-
-### Banco de Dados de Teste
-
-- **H2 Database**: Banco em memória para testes
-- **URL**: `jdbc:h2:mem:testdb`
-- **Console H2**: Disponível em `/h2-console` durante testes
-- **Auto DDL**: `create-drop` (recria schema a cada execução)
-
-### Perfil de Teste
-
-O arquivo `application-test.properties` configura:
-
-- Banco H2 em memória
-- Logging detalhado para debug
-- Desabilitação de cache
-- Configurações específicas para testes
-
-## 🧪 Estratégia de Testes
-
-### Testes Unitários
-
-**Características:**
-- Isolamento completo com mocks
-- Foco na lógica de negócio
-- Execução rápida (< 100ms por teste)
-- Cobertura de cenários positivos e negativos
-
-**Exemplo de Execução:**
+### **Gerar Relatório HTML**
 ```bash
-# Executar apenas testes unitários
-mvn test -Dtest="**/*Test" -Dtest="!**/*IT"
+mvn clean test jacoco:report
 ```
 
-### Testes de Integração
+O relatório será gerado em: `target/site/jacoco/index.html`
 
-**Características:**
-- Contexto Spring completo
-- Banco H2 real
-- Validação de serialização JSON
-- Verificação de códigos HTTP
-- Isolamento entre testes com `@DirtiesContext`
+### **Visualizar Relatório**
+1. Execute o comando acima
+2. Abra o arquivo `target/site/jacoco/index.html` no navegador
+3. Navegue pelas classes para ver detalhes de cobertura
 
-**Exemplo de Execução:**
-```bash
-# Executar apenas testes de integração
-mvn test -Dtest="**/*IT"
+### **Meta de Cobertura**
+- **Mínimo exigido:** 80% de cobertura de linha nos serviços
+- **Classes excluídas:** DTOs, Models, Configurações, Application main
+
+### **Interpretando o Relatório**
+- 🟢 **Verde:** Linhas cobertas pelos testes
+- 🔴 **Vermelho:** Linhas não cobertas
+- 🟡 **Amarelo:** Linhas parcialmente cobertas
+
+## 🎯 **Estratégia de Testes**
+
+### **Testes Unitários**
+- **Objetivo:** Testar lógica de negócio isolada
+- **Ferramentas:** JUnit 5, Mockito, AssertJ
+- **Cobertura:** Services e componentes de negócio
+- **Isolamento:** Mocks para dependências externas
+
+#### **Padrões Utilizados:**
+- **Nomenclatura:** `should_ExpectedResult_When_Condition`
+- **Estrutura:** Given-When-Then (AAA Pattern)
+- **Mocks:** `@Mock` para dependências, `@InjectMocks` para classe testada
+
+### **Testes de Integração**
+- **Objetivo:** Testar comportamento completo da API
+- **Ferramentas:** Spring Boot Test, TestRestTemplate, H2
+- **Cobertura:** Controllers e fluxo completo
+- **Isolamento:** Banco H2 em memória, `@DirtiesContext`
+
+#### **Validações Realizadas:**
+- Códigos de status HTTP (200, 201, 400, 404, 409)
+- Estrutura JSON das respostas
+- Persistência no banco de dados
+- Headers HTTP corretos
+
+### **Dados de Teste**
+- **TestData Classes:** Builders para criação de dados consistentes
+- **Cenários:** Dados válidos, inválidos e casos extremos
+- **Isolamento:** Cada teste usa dados independentes
+
+## 🔍 **Configurações de Teste**
+
+### **Banco de Dados**
+- **Tipo:** H2 em memória
+- **URL:** `jdbc:h2:mem:testdb`
+- **Configuração:** `application-test.properties`
+- **Isolamento:** Dados limpos entre testes
+
+### **Perfil de Teste**
+- **Profile:** `test`
+- **Segurança:** Desabilitada para testes
+- **Cache:** Configuração simplificada
+- **Logs:** Nível DEBUG para debugging
+
+### **Configurações Específicas**
+```properties
+# H2 Database para testes
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.jpa.hibernate.ddl-auto=create-drop
+
+# Logs detalhados
+logging.level.com.deliverytech=DEBUG
+logging.level.org.hibernate.SQL=DEBUG
+
+# Segurança desabilitada
+spring.security.enabled=false
 ```
 
-### Nomenclatura de Testes
+## 🚨 **Troubleshooting**
 
-Seguimos o padrão: `should_ExpectedBehavior_When_StateUnderTest`
+### **Problemas Comuns**
 
-**Exemplos:**
-- `should_SaveCliente_When_ValidDataProvided()`
-- `should_ThrowException_When_EmailAlreadyExists()`
-- `should_Return404_When_ClienteNotFound()`
-
-## 🐛 Troubleshooting
-
-### Problemas Comuns
-
-#### 1. Testes Falhando por Dependências
-
+#### **Testes Falhando por Dependências**
 ```bash
 # Limpar e reinstalar dependências
 mvn clean install -DskipTests
 mvn test
 ```
 
-#### 2. Erro de Conexão com Banco H2
+#### **Erro de Conexão com Banco**
+- Verificar se H2 está nas dependências
+- Confirmar configurações em `application-test.properties`
+- Verificar se perfil `test` está ativo
 
-Verifique se o `application-test.properties` está correto:
-```properties
-spring.datasource.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
-spring.jpa.hibernate.ddl-auto=create-drop
-```
+#### **Testes de Integração Lentos**
+- Usar `@DirtiesContext` apenas quando necessário
+- Verificar se dados estão sendo limpos corretamente
+- Considerar usar `@Transactional` com rollback
 
-#### 3. Testes de Integração Lentos
-
+#### **Cobertura Baixa**
 ```bash
-# Executar apenas testes unitários para desenvolvimento rápido
-mvn test -Dtest="**/*Test" -Dtest="!**/*IT"
-```
-
-#### 4. Cobertura Abaixo da Meta
-
-```bash
-# Ver relatório detalhado
-mvn jacoco:report
+# Verificar quais linhas não estão cobertas
+mvn clean test jacoco:report
 # Abrir target/site/jacoco/index.html
 ```
 
-### Logs de Debug
-
-Para debug detalhado durante testes:
-
+#### **Falha na Verificação de Cobertura**
 ```bash
-mvn test -Dlogging.level.com.deliverytech=DEBUG -Dlogging.level.org.springframework.test=DEBUG
+# Executar apenas o relatório sem verificação
+mvn clean test jacoco:report
+# Depois verificar manualmente o relatório
 ```
 
-## 📈 Métricas e Qualidade
-
-### Métricas Coletadas
-
-- **Cobertura de Linha**: Percentual de linhas executadas
-- **Cobertura de Branch**: Percentual de condicionais testadas
-- **Complexidade Ciclomática**: Complexidade dos métodos
-- **Tempo de Execução**: Performance dos testes
-
-### Critérios de Qualidade
-
-- ✅ Cobertura ≥ 80% nos serviços
-- ✅ Todos os testes passando
-- ✅ Tempo total < 30 segundos
-- ✅ Isolamento entre testes
-- ✅ Nomenclatura consistente
-
-## 🔄 Integração Contínua
-
-### Comandos para CI/CD
-
+### **Logs de Debug**
 ```bash
-# Pipeline completo
-mvn clean test jacoco:report jacoco:check
-
-# Falhar build se cobertura < 80%
-mvn clean test jacoco:check
-
-# Gerar relatórios para artifacts
-mvn test jacoco:report
+# Executar com logs detalhados
+mvn test -Dlogging.level.com.deliverytech=DEBUG -Dlogging.level.org.springframework=DEBUG
 ```
 
-### Arquivos de Saída para CI
+### **Executar Teste Individual com Debug**
+```bash
+mvn test -Dtest=ClienteServiceTest -Dlogging.level.com.deliverytech=TRACE
+```
 
-- `target/surefire-reports/`: Relatórios JUnit XML
-- `target/site/jacoco/jacoco.xml`: Dados de cobertura XML
-- `target/site/jacoco/index.html`: Relatório visual
+## 📈 **Métricas de Qualidade**
 
-## 📚 Recursos Adicionais
+### **Objetivos de Cobertura**
+- **Services:** ≥ 80% cobertura de linha
+- **Controllers:** ≥ 70% cobertura (via testes de integração)
+- **Utilitários:** ≥ 90% cobertura
 
-### Documentação de Referência
+### **Tipos de Teste**
+- **Unitários:** ~60% dos testes (rápidos, isolados)
+- **Integração:** ~40% dos testes (completos, realistas)
 
-- [Spring Boot Testing Guide](https://spring.io/guides/gs/testing-web/)
-- [JUnit 5 User Guide](https://junit.org/junit5/docs/current/user-guide/)
-- [Mockito Documentation](https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html)
-- [JaCoCo Maven Plugin Guide](https://www.jacoco.org/jacoco/trunk/doc/maven.html)
+### **Performance**
+- **Testes Unitários:** < 100ms por teste
+- **Testes de Integração:** < 2s por teste
+- **Suite Completa:** < 30s total
 
-### Comandos Úteis de Referência
+## 🎉 **Boas Práticas**
 
+### **Escrevendo Testes**
+1. **Nomes descritivos:** Use convenção `should_When_Then`
+2. **Arrange-Act-Assert:** Estruture testes claramente
+3. **Um conceito por teste:** Cada teste valida uma coisa
+4. **Dados independentes:** Use TestData builders
+5. **Mocks mínimos:** Mock apenas dependências externas
+
+### **Manutenção**
+1. **Execute testes frequentemente** durante desenvolvimento
+2. **Mantenha cobertura alta** mas foque na qualidade
+3. **Refatore testes** junto com código de produção
+4. **Use testes como documentação** do comportamento esperado
+
+### **CI/CD**
+1. **Testes obrigatórios** antes de merge
+2. **Relatórios automáticos** de cobertura
+3. **Falha de build** se cobertura < 80%
+4. **Notificações** de testes falhando
+
+---
+
+## 📞 **Suporte**
+
+Para dúvidas sobre os testes:
+1. Consulte este README
+2. Verifique os logs de execução
+3. Analise o relatório de cobertura
+4. Consulte a documentação do Spring Boot Testing
+
+**Comandos de Referência Rápida:**
 ```bash
 # Execução básica
-mvn test                                    # Todos os testes
-mvn test -Dtest=ClienteServiceTest         # Teste específico
-mvn clean test jacoco:report               # Com cobertura
+mvn test
 
-# Perfis e configurações
-mvn test -Dspring.profiles.active=test     # Perfil específico
-mvn test -DfailIfNoTests=false             # Não falhar se sem testes
+# Com cobertura
+mvn clean test jacoco:report
 
-# Debug e análise
-mvn test -X                                # Debug do Maven
-mvn test -Dmaven.surefire.debug            # Debug dos testes
+# Teste específico
+mvn test -Dtest=ClienteServiceTest
+
+# Com logs detalhados
+mvn test -Dlogging.level.com.deliverytech=DEBUG
 ```
 
 ---
 
-## 🎯 Resumo Executivo
-
-Este sistema de testes fornece:
-
-- **62+ cenários de teste** cobrindo funcionalidades críticas
-- **Cobertura automatizada** com meta de 80%
-- **Execução rápida** para feedback imediato
-- **Isolamento completo** entre testes
-- **Relatórios detalhados** para análise de qualidade
-
-Para execução rápida durante desenvolvimento:
-```bash
-mvn test jacoco:report
-```
-
-Para verificação completa antes de commit:
-```bash
-mvn clean test jacoco:check
-```
+*Documentação atualizada em Outubro 2025*  
+*DeliveryTech API - Sistema de Testes v2.0*

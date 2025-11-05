@@ -134,7 +134,7 @@ class PedidoControllerIT {
         assertThat(response.getBody().getStatus()).isEqualTo(StatusPedido.PENDENTE);
         assertThat(response.getBody().getCliente().getId()).isEqualTo(clienteTestData.getId());
         assertThat(response.getBody().getRestaurante().getId()).isEqualTo(restauranteTestData.getId());
-        assertThat(response.getBody().getTotal()).isGreaterThan(BigDecimal.ZERO);
+        assertThat(response.getBody().getValorTotal()).isGreaterThan(BigDecimal.ZERO);
 
         // Verificar persistência no banco
         List<Pedido> pedidosNoBanco = pedidoRepository.findAll();
@@ -159,8 +159,8 @@ class PedidoControllerIT {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getType()).contains("validation");
-        assertThat(response.getBody().getErrors()).isNotEmpty();
+        assertThat(response.getBody().getError().getCode()).contains("VALIDATION");
+        assertThat(response.getBody().getError().getFields()).isNotEmpty();
 
         // Verificar que não foi persistido
         List<Pedido> pedidosNoBanco = pedidoRepository.findAll();
@@ -188,7 +188,7 @@ class PedidoControllerIT {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getDetail()).contains("Produto");
+        assertThat(response.getBody().getError().getDetails()).contains("Produto");
     }
 
     @Test
@@ -216,7 +216,7 @@ class PedidoControllerIT {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getDetail()).contains("não está disponível");
+        assertThat(response.getBody().getError().getDetails()).contains("não está disponível");
     }
 
     @Test
@@ -244,7 +244,7 @@ class PedidoControllerIT {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getDetail()).contains("Cliente não está ativo");
+        assertThat(response.getBody().getError().getDetails()).contains("Cliente não está ativo");
     }
 
     @Test
@@ -272,7 +272,7 @@ class PedidoControllerIT {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getDetail()).contains("Restaurante não está ativo");
+        assertThat(response.getBody().getError().getDetails()).contains("Restaurante não está ativo");
     }
 
     // ========== TESTES DE BUSCA POR ID (GET) ==========
@@ -294,7 +294,7 @@ class PedidoControllerIT {
         assertThat(response.getBody().getCliente().getId()).isEqualTo(clienteTestData.getId());
         assertThat(response.getBody().getRestaurante().getId()).isEqualTo(restauranteTestData.getId());
         assertThat(response.getBody().getItens()).isNotEmpty();
-        assertThat(response.getBody().getTotal()).isGreaterThan(BigDecimal.ZERO);
+        assertThat(response.getBody().getValorTotal()).isGreaterThan(BigDecimal.ZERO);
     }
 
     @Test
@@ -310,7 +310,7 @@ class PedidoControllerIT {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getDetail()).contains("Pedido não encontrado");
+        assertThat(response.getBody().getError().getDetails()).contains("Pedido não encontrado");
     }
 
     // ========== TESTES DE HISTÓRICO POR CLIENTE (GET) ==========
@@ -399,7 +399,7 @@ class PedidoControllerIT {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getDetail()).contains("Pedido não encontrado");
+        assertThat(response.getBody().getError().getDetails()).contains("Pedido não encontrado");
     }
 
     // ========== TESTES DE CÁLCULO DE VALORES ==========
@@ -441,7 +441,7 @@ class PedidoControllerIT {
         
         // Total esperado: 51.80 + 15.00 + taxa de entrega
         BigDecimal totalItens = new BigDecimal("66.80");
-        assertThat(response.getBody().getTotal()).isGreaterThan(totalItens); // Inclui taxa de entrega
+        assertThat(response.getBody().getValorTotal()).isGreaterThan(totalItens); // Inclui taxa de entrega
         assertThat(response.getBody().getItens()).hasSize(2);
     }
 
@@ -480,8 +480,8 @@ class PedidoControllerIT {
         assertThat(body.getRestaurante().getNome()).isNotNull();
         assertThat(body.getStatus()).isNotNull();
         assertThat(body.getDataPedido()).isNotNull();
-        assertThat(body.getTotal()).isNotNull();
-        assertThat(body.getTaxaEntrega()).isNotNull();
+        assertThat(body.getValorTotal()).isNotNull();
+        // Taxa de entrega não está disponível diretamente no PedidoResponseDTO
         assertThat(body.getItens()).isNotNull();
         assertThat(body.getItens()).isNotEmpty();
         
@@ -492,7 +492,7 @@ class PedidoControllerIT {
         assertThat(item.getProduto().getId()).isNotNull();
         assertThat(item.getQuantidade()).isNotNull();
         assertThat(item.getPrecoUnitario()).isNotNull();
-        assertThat(item.getSubtotal()).isNotNull();
+        assertThat(item.getPrecoTotal()).isNotNull();
     }
 
     // ========== MÉTODOS AUXILIARES ==========

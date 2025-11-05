@@ -6,6 +6,7 @@ import com.deliverytech.delivery.exception.EntityNotFoundException;
 import com.deliverytech.delivery.model.*;
 import com.deliverytech.delivery.repository.*;
 import com.deliverytech.delivery.util.PedidoTestData;
+import com.deliverytech.delivery.util.ClienteTestData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -66,7 +67,7 @@ class PedidoServiceTest {
         validPedidoDTO = PedidoTestData.createValidPedidoDTO();
         validPedido = PedidoTestData.createValidPedido();
         validPedidoResponseDTO = PedidoTestData.createValidPedidoResponseDTO();
-        validClienteResponseDTO = PedidoTestData.createValidRestauranteResponseDTO();
+        validClienteResponseDTO = ClienteTestData.createValidClienteResponseDTO();
         validRestauranteResponseDTO = PedidoTestData.createValidRestauranteResponseDTO();
         validProdutoResponseDTO = PedidoTestData.createValidProdutoResponseDTO();
         
@@ -115,7 +116,7 @@ class PedidoServiceTest {
     @DisplayName("Deve lançar exceção quando cliente está inativo")
     void should_ThrowBusinessException_When_ClienteInactive() {
         // Given
-        ClienteResponseDTO clienteInativo = PedidoTestData.createValidRestauranteResponseDTO();
+        ClienteResponseDTO clienteInativo = ClienteTestData.createValidClienteResponseDTO();
         clienteInativo.setAtivo(false);
         
         when(clienteService.buscarClientePorId(validPedidoDTO.getClienteId()))

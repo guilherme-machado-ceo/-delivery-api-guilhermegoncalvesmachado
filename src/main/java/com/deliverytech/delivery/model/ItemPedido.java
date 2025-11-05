@@ -69,6 +69,15 @@ public class ItemPedido {
         this.precoTotal = precoTotal;
     }
 
+    // Compatibility methods expected by services: subtotal aliases
+    public BigDecimal getSubtotal() {
+        return this.precoTotal;
+    }
+
+    public void setSubtotal(BigDecimal subtotal) {
+        this.precoTotal = subtotal;
+    }
+
     public String getObservacao() {
         return observacao;
     }

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import java.util.List;
+import com.deliverytech.delivery.dto.FieldError;
 
 @Schema(description = "Resposta de erro da API")
 public class ErrorResponse {
@@ -86,7 +87,7 @@ public class ErrorResponse {
         private String details;
         
         @Schema(description = "Lista de erros de campo")
-        private List<String> fieldErrors;
+        private List<FieldError> fieldErrors;
         
         public ErrorDetails() {}
         
@@ -101,7 +102,7 @@ public class ErrorResponse {
             this.details = details;
         }
         
-        public ErrorDetails(String code, String message, List<String> fieldErrors) {
+        public ErrorDetails(String code, String message, List<FieldError> fieldErrors) {
             this.code = code;
             this.message = message;
             this.fieldErrors = fieldErrors;
@@ -132,11 +133,11 @@ public class ErrorResponse {
             this.details = details;
         }
         
-        public List<String> getFieldErrors() {
+        public List<FieldError> getFieldErrors() {
             return fieldErrors;
         }
         
-        public void setFieldErrors(List<String> fieldErrors) {
+        public void setFieldErrors(List<FieldError> fieldErrors) {
             this.fieldErrors = fieldErrors;
         }
     }

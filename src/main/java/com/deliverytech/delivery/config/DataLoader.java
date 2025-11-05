@@ -112,11 +112,6 @@ public class DataLoader implements CommandLineRunner {
         pedido1.setRestaurante(restaurante1);
         pedido1.setStatus(StatusPedido.CONFIRMADO);
         pedido1.setValorTotal(new BigDecimal("45.00"));
-        pedido1.setEnderecoEntrega("Rua A, 123 - São Paulo/SP");
-        pedido1.setCepEntrega("01234-567");
-        pedido1.setTaxaEntrega(new BigDecimal("5.00"));
-        pedido1.setTotal(new BigDecimal("50.00"));
-        pedido1.setObservacoes("Sem cebola");
         pedido1.setDataPedido(LocalDateTime.now());
         
         Pedido pedido2 = new Pedido();
@@ -124,11 +119,6 @@ public class DataLoader implements CommandLineRunner {
         pedido2.setRestaurante(restaurante2);
         pedido2.setStatus(StatusPedido.ENTREGUE);
         pedido2.setValorTotal(new BigDecimal("46.00"));
-        pedido2.setEnderecoEntrega("Rua B, 456 - São Paulo/SP");
-        pedido2.setCepEntrega("01234-890");
-        pedido2.setTaxaEntrega(new BigDecimal("6.00"));
-        pedido2.setTotal(new BigDecimal("52.00"));
-        pedido2.setObservacoes("Entrega rápida");
         pedido2.setDataPedido(LocalDateTime.now().minusHours(2));
 
         pedidoRepository.saveAll(Arrays.asList(pedido1, pedido2));

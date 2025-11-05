@@ -69,15 +69,6 @@ public class ItemPedido {
         this.precoTotal = precoTotal;
     }
 
-    // Método auxiliar para compatibilidade
-    public void setSubtotal(BigDecimal subtotal) {
-        this.precoTotal = subtotal;
-    }
-
-    public BigDecimal getSubtotal() {
-        return precoTotal;
-    }
-
     public String getObservacao() {
         return observacao;
     }

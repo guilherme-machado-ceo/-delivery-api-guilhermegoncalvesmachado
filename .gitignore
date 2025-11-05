@@ -67,3 +67,7 @@ log/
 *.bak
 *.backup
 *~
+
+# Local specs / IDE artifacts
+.kiro/
+

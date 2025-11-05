@@ -1,0 +1,87 @@
+# Arquivos e diretórios a serem ignorados no build Docker
+
+# Diretórios de build e target
+target/
+build/
+out/
+
+# Arquivos de IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.temp
+
+# Arquivos Git
+.git/
+.gitignore
+.gitattributes
+
+# Arquivos Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Arquivos de documentação
+README.md
+*.md
+docs/
+
+# Arquivos de configuração local
+.env
+.env.local
+.env.*.local
+
+# Arquivos de teste
+src/test/
+**/test/
+**/*Test.java
+**/*IT.java
+
+# Node modules (se houver frontend)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Logs
+logs/
+*.log
+
+# Arquivos temporários
+*.swp
+*.swo
+*~
+
+# Arquivos de backup
+*.bak
+*.backup
+
+# Arquivos de cache
+.cache/
+*.cache
+
+# Arquivos específicos do Maven
+.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
+
+# Arquivos de relatórios
+RELATORIO_*.md
+relatorio_*.md
+
+# Arquivos de especificação Kiro
+.kiro/
+
+# Arquivos de configuração de desenvolvimento
+application-dev.properties
+application-local.properties

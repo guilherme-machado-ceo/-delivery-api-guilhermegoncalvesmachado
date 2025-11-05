@@ -1,0 +1,73 @@
+# Docker Compose para ambiente de desenvolvimento
+# Use: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+version: '3.8'
+
+services:
+  # ================================
+  # Aplicação - Configurações de DEV
+  # ================================
+  delivery-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder  # Para desenvolvimento, pode usar o stage de build
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker,dev
+      - JAVA_OPTS=-Xmx256m -Xms128m -XX:+UseG1GC -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+    ports:
+      - "5005:5005"  # Debug port
+    volumes:
+      # Hot reload para desenvolvimento (opcional)
+      - ./src:/app/src:ro
+      - ./target:/app/target
+    restart: "no"  # Não reiniciar automaticamente em dev
+
+  # ================================
+  # PostgreSQL - Configurações de DEV
+  # ================================
+  postgres:
+    environment:
+      - POSTGRES_DB=deliverytech_dev
+    ports:
+      - "5433:5432"  # Porta diferente para não conflitar
+    volumes:
+      - postgres-dev-data:/var/lib/postgresql/data
+      - ./docker/postgres/init-dev.sql:/docker-entrypoint-initdb.d/init-dev.sql:ro
+
+  # ================================
+  # Redis - Configurações de DEV
+  # ================================
+  redis:
+    ports:
+      - "6380:6379"  # Porta diferente para não conflitar
+    command: redis-server --appendonly no --maxmemory 128mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis-dev-data:/data
+
+  # ================================
+  # Nginx - Desabilitado em DEV
+  # ================================
+  nginx:
+    profiles:
+      - production  # Só ativa em produção
+
+  # ================================
+  # Monitoramento - Simplificado em DEV
+  # ================================
+  prometheus:
+    profiles:
+      - monitoring  # Só ativa quando necessário
+
+  grafana:
+    profiles:
+      - monitoring  # Só ativa quando necessário
+
+# ================================
+# Volumes específicos para DEV
+# ================================
+volumes:
+  postgres-dev-data:
+    name: delivery-postgres-dev-data
+  redis-dev-data:
+    name: delivery-redis-dev-data

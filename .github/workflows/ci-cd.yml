@@ -1,0 +1,124 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ "master", "main" ]
+  pull_request:
+    branches: [ "master", "main" ]
+
+jobs:
+  build-and-test:
+    name: Build, Test and Package
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 23
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '23'
+          cache: 'maven'
+
+      - name: Cache Maven local repository
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-m2-
+
+      - name: Build and run tests
+        run: mvn -B clean verify -DskipTests=false
+
+      - name: Package (create jar)
+        run: mvn -B package -DskipTests
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: delivery-api-jar
+          path: target/*.jar
+
+  docker-image:
+    name: Build and (optionally) push Docker image
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: always()
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Load artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: delivery-api-jar
+
+      - name: Build Docker image
+        run: |
+          docker build --build-arg JAR_FILE=$(ls target/*.jar | head -n1) -t ${{ env.DOCKER_IMAGE_NAME || 'delivery-api:latest' }} .
+
+      - name: Log in to DockerHub (optional)
+        if: ${{ secrets.DOCKERHUB_USERNAME && secrets.DOCKERHUB_TOKEN }}
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Push to DockerHub (optional)
+        if: ${{ secrets.DOCKERHUB_USERNAME && secrets.DOCKERHUB_TOKEN }}
+        run: |
+          docker tag ${{ env.DOCKER_IMAGE_NAME || 'delivery-api:latest' }} ${{ secrets.DOCKERHUB_USERNAME }}/delivery-api:${{ github.sha }}
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/delivery-api:${{ github.sha }}
+
+  deploy-to-test:
+    name: Deploy to test/homolog (via SSH)
+    runs-on: ubuntu-latest
+    needs: docker-image
+    if: ${{ secrets.DEPLOY_HOST && secrets.DEPLOY_USER && secrets.SSH_PRIVATE_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.8.1
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy - pull/run Docker image on remote host
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "docker pull ${{ secrets.DOCKERHUB_USERNAME }}/delivery-api:${{ github.sha }} || true && docker stop delivery-api || true && docker rm delivery-api || true && docker run -d --name delivery-api -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/delivery-api:${{ github.sha }}"
+
+  smoke-test:
+    name: Smoke test deployed app
+    runs-on: ubuntu-latest
+    needs: deploy-to-test
+    if: ${{ secrets.DEPLOY_HOST && secrets.DEPLOY_USER && secrets.SSH_PRIVATE_KEY }}
+
+    steps:
+      - name: Wait for app to be ready (poll)
+        run: |
+          for i in {1..20}; do
+            status=$(curl -s -o /dev/null -w "%{http_code}" http://${{ secrets.DEPLOY_HOST }}:8080/actuator/health || true)
+            if [ "$status" = "200" ]; then
+              echo "up"; exit 0;
+            fi
+            sleep 5
+          done
+          echo "Application did not become ready"; exit 1
+
+      - name: Run basic smoke request
+        run: |
+          curl -sS http://${{ secrets.DEPLOY_HOST }}:8080/api/health || true

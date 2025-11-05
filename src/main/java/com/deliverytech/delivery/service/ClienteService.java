@@ -1,5 +1,6 @@
 package com.deliverytech.delivery.service;
 
+import com.deliverytech.delivery.config.CacheConfig;
 import com.deliverytech.delivery.dto.ClienteDTO;
 import com.deliverytech.delivery.dto.ClienteResponseDTO;
 import com.deliverytech.delivery.exception.DuplicateResourceException;
@@ -8,6 +9,9 @@ import com.deliverytech.delivery.model.Cliente;
 import com.deliverytech.delivery.repository.ClienteRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -25,6 +29,7 @@ public class ClienteService implements ClienteServiceInterface {
     private ModelMapper modelMapper;
     
     @Override
+    @CacheEvict(value = CacheConfig.CLIENTES_CACHE, allEntries = true)
     public ClienteResponseDTO cadastrarCliente(ClienteDTO dto) {
         // Validar email único
         if (clienteRepository.findByEmail(dto.getEmail()).isPresent()) {
@@ -40,6 +45,7 @@ public class ClienteService implements ClienteServiceInterface {
     
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = CacheConfig.CLIENTES_CACHE, key = "#id")
     public ClienteResponseDTO buscarClientePorId(Long id) {
         Cliente cliente = clienteRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Cliente", id));
@@ -49,6 +55,7 @@ public class ClienteService implements ClienteServiceInterface {
     
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = CacheConfig.CLIENTES_CACHE, key = "'email:' + #email")
     public ClienteResponseDTO buscarClientePorEmail(String email) {
         Cliente cliente = clienteRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado com email: " + email));
@@ -57,6 +64,11 @@ public class ClienteService implements ClienteServiceInterface {
     }
     
     @Override
+    @Caching(evict = {
+        @CacheEvict(value = CacheConfig.CLIENTES_CACHE, key = "#id"),
+        @CacheEvict(value = CacheConfig.CLIENTES_CACHE, key = "'email:' + #dto.email"),
+        @CacheEvict(value = CacheConfig.CLIENTES_CACHE, allEntries = true)
+    })
     public ClienteResponseDTO atualizarCliente(Long id, ClienteDTO dto) {
         Cliente clienteExistente = clienteRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Cliente", id));
@@ -79,6 +91,10 @@ public class ClienteService implements ClienteServiceInterface {
     }
     
     @Override
+    @Caching(evict = {
+        @CacheEvict(value = CacheConfig.CLIENTES_CACHE, key = "#id"),
+        @CacheEvict(value = CacheConfig.CLIENTES_CACHE, allEntries = true)
+    })
     public ClienteResponseDTO ativarDesativarCliente(Long id) {
         Cliente cliente = clienteRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Cliente", id));
@@ -91,6 +107,7 @@ public class ClienteService implements ClienteServiceInterface {
     
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = CacheConfig.CLIENTES_CACHE, key = "'ativos'")
     public List<ClienteResponseDTO> listarClientesAtivos() {
         List<Cliente> clientesAtivos = clienteRepository.findByAtivoTrue();
         

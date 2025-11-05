@@ -19,7 +19,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmail(String email);
     
     /**
-     * Busca usuários ativos
+     * Busca usuários ativos (campo 'ativo' no modelo)
      */
-    java.util.List<User> findByEnabledTrue();
+    java.util.List<User> findByAtivoTrue();
 }
